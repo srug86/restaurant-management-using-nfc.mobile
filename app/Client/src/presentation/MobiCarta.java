@@ -16,6 +16,8 @@ import javax.microedition.contactless.TargetListener;
 import javax.microedition.contactless.TargetProperties;
 import javax.microedition.contactless.TargetType;
 import javax.microedition.contactless.ndef.NDEFMessage;
+import javax.microedition.contactless.ndef.NDEFRecordListener;
+import javax.microedition.contactless.ndef.NDEFRecordType;
 import javax.microedition.contactless.ndef.NDEFTagConnection;
 import javax.microedition.io.Connector;
 import javax.microedition.midlet.*;
@@ -24,13 +26,13 @@ import javax.microedition.lcdui.*;
 /**
  * @author Sergio
  */
-public class MobiCarta extends MIDlet implements CommandListener, TargetListener {
+public class MobiCarta extends MIDlet implements CommandListener, NDEFRecordListener, TargetListener {
     
     private boolean midletPaused = false;
-    private String receiver = "";
-    private String bar = "";
-    private Vector products;
 
+    private Alert alert;
+    private Command exit, cancel;
+    private Form searching;
 //<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
 private Form profile;
 private StringItem stringItem;
@@ -49,8 +51,8 @@ private Alert error;
 private Form main;
 private ImageItem imageItem;
 private StringItem stringItem2;
-private Alert errorSendingOL;
 private Alert successSendingOL;
+private Alert errorSendingOL;
 private Alert subtractElement;
 private Command exitProfileCommand;
 private Command saveCommand;
@@ -59,8 +61,8 @@ private Command sendCommand;
 private Command exitPSCommand;
 private Command exitPECommand;
 private Command exitMainCommand;
-private Command exitOLSCommand;
 private Command exitOLECommand;
+private Command exitOLSCommand;
 private Command cancelSubtractCommand;
 private Font font;
 private Image image1;
@@ -79,9 +81,10 @@ private Image image1;
  * It is called only once when the MIDlet is started. The method is called before the <code>startMIDlet</code> method.
  */
 private void initialize () {//GEN-END:|0-initialize|0|0-preInitialize
-        // write pre-initialize user code here
+        addNFCListener();
 //GEN-LINE:|0-initialize|1|0-postInitialize
-        // write post-initialize user code here
+
+        
 }//GEN-BEGIN:|0-initialize|2|
 //</editor-fold>//GEN-END:|0-initialize|2|
 
@@ -91,7 +94,7 @@ private void initialize () {//GEN-END:|0-initialize|0|0-preInitialize
  */
 public void startMIDlet () {//GEN-END:|3-startMIDlet|0|3-preAction
         // write pre-action user code here
-switchDisplayable (null, getMain ());//GEN-LINE:|3-startMIDlet|1|3-postAction
+//GEN-LINE:|3-startMIDlet|1|3-postAction
         // write post-action user code here
 }//GEN-BEGIN:|3-startMIDlet|2|
 //</editor-fold>//GEN-END:|3-startMIDlet|2|
@@ -136,19 +139,19 @@ public void commandAction (Command command, Displayable displayable) {//GEN-END:
 if (displayable == error) {//GEN-BEGIN:|7-commandAction|1|42-preAction
 if (command == exitPECommand) {//GEN-END:|7-commandAction|1|42-preAction
  // write pre-action user code here
-switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|2|42-postAction
+//GEN-LINE:|7-commandAction|2|42-postAction
  // write post-action user code here
 }//GEN-BEGIN:|7-commandAction|3|59-preAction
 } else if (displayable == errorSendingOL) {
 if (command == exitOLECommand) {//GEN-END:|7-commandAction|3|59-preAction
  // write pre-action user code here
-switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|4|59-postAction
+//GEN-LINE:|7-commandAction|4|59-postAction
  // write post-action user code here
 }//GEN-BEGIN:|7-commandAction|5|49-preAction
 } else if (displayable == main) {
 if (command == exitMainCommand) {//GEN-END:|7-commandAction|5|49-preAction
  // write pre-action user code here
-exitMIDlet ();//GEN-LINE:|7-commandAction|6|49-postAction
+//GEN-LINE:|7-commandAction|6|49-postAction
  // write post-action user code here
 }//GEN-BEGIN:|7-commandAction|7|22-preAction
 } else if (displayable == ordersList) {
@@ -172,6 +175,7 @@ Address address = new Address(getTxtFStreet().getString(), getTxtFNumber().getSt
         getTxtFState().getString());
 Client client = new Client(getTxtFDNI().getString(), getTxtFName().getString(),
         getTxtFSurname().getString(), address);
+
 if (ProfileManager.saveProfile(client))
     getDisplay().setCurrent(getSuccess(), getProfile());
 else
@@ -182,23 +186,28 @@ else
 } else if (displayable == subtractElement) {
 if (command == cancelSubtractCommand) {//GEN-END:|7-commandAction|15|64-preAction
  // write pre-action user code here
-switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|16|64-postAction
+//GEN-LINE:|7-commandAction|16|64-postAction
  // write post-action user code here
 }//GEN-BEGIN:|7-commandAction|17|44-preAction
 } else if (displayable == success) {
 if (command == exitPSCommand) {//GEN-END:|7-commandAction|17|44-preAction
  // write pre-action user code here
-switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|18|44-postAction
+//GEN-LINE:|7-commandAction|18|44-postAction
  // write post-action user code here
 }//GEN-BEGIN:|7-commandAction|19|57-preAction
 } else if (displayable == successSendingOL) {
 if (command == exitOLSCommand) {//GEN-END:|7-commandAction|19|57-preAction
  // write pre-action user code here
-switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|20|57-postAction
+//GEN-LINE:|7-commandAction|20|57-postAction
  // write post-action user code here
 }//GEN-BEGIN:|7-commandAction|21|7-postCommandAction
 }//GEN-END:|7-commandAction|21|7-postCommandAction
- // write post-action user code here
+else if (command == exit) {
+    exitMIDlet();
+}
+else if (command == cancel) {
+    exitMIDlet();
+}
 }//GEN-BEGIN:|7-commandAction|22|
 //</editor-fold>//GEN-END:|7-commandAction|22|
 
@@ -714,6 +723,9 @@ return cancelSubtractCommand;
     /* Metodo para registrar el Listener NFC y capturar sus errores */
     public void addNFCListener(){
         try {
+            DiscoveryManager.getInstance().addNDEFRecordListener(this, new NDEFRecordType(NDEFRecordType.MIME, "app/checkpoint"));
+            DiscoveryManager.getInstance().addNDEFRecordListener(this, new NDEFRecordType(NDEFRecordType.MIME, "app/bill-request"));
+            DiscoveryManager.getInstance().addNDEFRecordListener(this, new NDEFRecordType(NDEFRecordType.MIME, "app/product"));
             DiscoveryManager.getInstance().addTargetListener((TargetListener)this, TargetType.NDEF_TAG);
             DiscoveryManager.getInstance().addTargetListener((TargetListener)this, TargetType.RFID_TAG);
         } catch (IllegalStateException ex) {
@@ -728,6 +740,12 @@ return cancelSubtractCommand;
             DiscoveryManager.getInstance().removeTargetListener((TargetListener)this, TargetType.RFID_TAG);
         } catch (IllegalStateException ex) {
         }
+    }
+    
+    public void removeNDEFListener() {
+        DiscoveryManager.getInstance().removeNDEFRecordListener(this, new NDEFRecordType(NDEFRecordType.MIME, "app/checkpoint"));
+        DiscoveryManager.getInstance().removeNDEFRecordListener(this, new NDEFRecordType(NDEFRecordType.MIME, "app/bill-request"));
+        DiscoveryManager.getInstance().removeNDEFRecordListener(this, new NDEFRecordType(NDEFRecordType.MIME, "app/product"));
     }
 
     /**
@@ -757,7 +775,6 @@ return cancelSubtractCommand;
         } else {
             initialize();
             startMIDlet();
-            addNFCListener();
         }
         midletPaused = false;
     }
@@ -781,74 +798,128 @@ return cancelSubtractCommand;
         NDEFTagConnection connection = null;
         try {
             connection = (NDEFTagConnection)Connector.open(tps[0].getUrl());
-            NDEFMessage message = ((NDEFTagConnection)connection).readNDEF();
-            if (message.getRecord(0).getRecordType().getName().toString().equals("app/checkpoint")
-                    && getDisplay().getCurrent() == getMain()) {
-                getDisplay().setCurrent(getProfile());   
-                receiver = new String(message.getRecord(0).getPayload().toString());
-            }
-            else if (message.getRecord(0).getRecordType().getName().toString().equals("app/bill-request")
-                    && getDisplay().getCurrent() == getMain()) {
-                //getDisplay().setCurrent(get);
-                bar = new String(message.getRecord(0).getPayload().toString());
-            }
-            else if (message.getRecord(0).getRecordType().getName().toString().equals("app/product")) {
-                if (getDisplay().getCurrent() != getSubtractElement()) {
-                    if (getDisplay().getCurrent() == getMain()) {
-                        getOrdersList().deleteAll();
-                        getDisplay().setCurrent(getOrdersList());
-                    }
-                    String product = new String(message.getRecord(0).getPayload());
-                    int n = ProductsListManager.addProduct(product);
-                    if (n == 1) {
-                        StringItem si = new StringItem(product, String.valueOf(1));
-                        getOrdersList().append(si);
-                    }
-                    else
-                        for (int i = 0; i < getOrdersList().size(); i++)
-                            if (((StringItem)getOrdersList().get(i)).getLabel().toString().equals(product)) {
-                                ((StringItem)getOrdersList().get(i)).setText(String.valueOf(n));
-                                break;
-                            }
-                }
-                else {
-                    String product = new String(message.getRecord(0).getPayload());
-                    int n = ProductsListManager.removeProduct(product);
-                    if (n != -1) {
-                        if (n == 0) {
-                            for (int i = 0; i < getOrdersList().size(); i++)
-                                if (((StringItem)getOrdersList().get(i)).getLabel().toString().equals(product)) {
-                                    getOrdersList().delete(i);
-                                    getDisplay().setCurrent(getOrdersList());
-                                    break;
-                                }
-                        }
-                        else {
-                            for (int i = 0; i < getOrdersList().size(); i++)
-                                if (((StringItem)getOrdersList().get(i)).getLabel().toString().equals(product)) {
-                                    ((StringItem)getOrdersList().get(i)).setText(String.valueOf(n));
-                                    getDisplay().setCurrent(getOrdersList());
-                                    break;
-                                }
-                        }
-                    }
-                }
-            }
-            else if (getDisplay().getCurrent() == getOrdersList() && ProductsListManager.productsList.size() > 0) {
-                if (message.getRecord(0).getRecordType().getName().toString().equals("app/send-order")) {
-                    if (ProductsListManager.sendOrder(new String(message.getRecord(0).getPayload())))
-                        getDisplay().setCurrent(getSuccessSendingOL(), getOrdersList());
-                    else
-                        getDisplay().setCurrent(getErrorSendingOL(), getOrdersList());
-                }
-                else if (message.getRecord(0).getRecordType().getName().toString().equals("app/subtract-product"))
-                    getDisplay().setCurrent(getSubtractElement());
-            }
+            tagProcessing(((NDEFTagConnection)connection).readNDEF());
         } catch (Exception e) { }
         finally {
             try {
                 connection.close();
             } catch (IOException ex) { }
         }
+    }
+
+    public void recordDetected(NDEFMessage ndefm) {
+        tagProcessing(ndefm);
+        removeNDEFListener();
+    }
+    
+    private void tagProcessing(NDEFMessage message) {
+        String type = message.getRecord(0).getRecordType().getName().toString();
+        String content = new String(message.getRecord(0).getPayload());
+        if (type.equals("app/checkpoint"))
+            clientRegister(content);
+        else if (type.equals("app/bill-request"))
+            billRequest(content);
+        else if (type.equals("app/product")) {
+            if (getDisplay().getCurrent() == getOrdersList())
+                addProduct(content);
+            else if (getDisplay().getCurrent() == getSubtractElement())
+                subtractProduct(content);
+            else
+                newOrder(content);
+        }
+        else if (type.equals("app/send-order")) {
+            if (getDisplay().getCurrent() == getOrdersList() && ProductsListManager.productsList.size() > 0)
+                sendOrder(content);
+        }
+        else if (type.equals("app/subtract-product")) {
+            if (getDisplay().getCurrent() == getOrdersList() && ProductsListManager.productsList.size() > 0)
+                getDisplay().setCurrent(getSubtractElement());
+        }
+    }
+    
+    private void clientRegister(String receiver) {
+        if (!ProfileManager.loadFile(ProfileManager.profile).equals("")) {
+            if (ProfileManager.sendProfile(receiver, this))
+                connecting("Registrando cliente");
+            else
+                showAlert("Usuario no registrado", "Se produjo un error en la conexión Bluetooth", AlertType.ERROR);
+        }
+        else {
+            Alert alert1 = new Alert("Perfil no encontrado", "Complete el siguiente formulario con sus datos", null, AlertType.WARNING);
+            Display.getDisplay(this).setCurrent(alert1, getProfile());
+        }
+    }
+    
+    private void billRequest(String bar) {
+        if (ProductsListManager.billRequest(bar, this))
+            connecting("Solicitando factura");
+        else
+            showAlert("Solicitud no enviada", "Se produjo un error al enviar la solicitud de facturación", AlertType.ERROR);
+    }
+    
+    private void newOrder(String product) {
+        getDisplay().setCurrent(getOrdersList());
+        ProductsListManager.addProduct(product);
+        getOrdersList().append(new StringItem(product, String.valueOf(1)));
+    }
+    
+    private void addProduct(String product) {
+        int n = ProductsListManager.addProduct(product);
+        if (n == 1)
+            getOrdersList().append(new StringItem(product, String.valueOf(1)));
+        else
+            for (int i = 0; i < getOrdersList().size(); i++)
+                if (((StringItem)getOrdersList().get(i)).getLabel().toString().equals(product)) {
+                    ((StringItem)getOrdersList().get(i)).setText(String.valueOf(n));
+                    break;
+                }
+    }
+    
+    private void subtractProduct(String product) {
+        int n = ProductsListManager.removeProduct(product);
+        if (n != -1) {
+            if (n == 0) {
+                for (int i = 0; i < getOrdersList().size(); i++)
+                    if (((StringItem)getOrdersList().get(i)).getLabel().toString().equals(product)) {
+                        getOrdersList().delete(i);
+                        getDisplay().setCurrent(getOrdersList());
+                        break;
+                    }
+            }
+            else {
+                for (int i = 0; i < getOrdersList().size(); i++)
+                    if (((StringItem)getOrdersList().get(i)).getLabel().toString().equals(product)) {
+                        ((StringItem)getOrdersList().get(i)).setText(String.valueOf(n));
+                        getDisplay().setCurrent(getOrdersList());
+                        break;
+                    }
+            }
+        }
+    }
+    
+    private void sendOrder(String bar) {
+        if (ProductsListManager.sendOrder(bar, this))
+            connecting("Enviando pedido");
+        else {
+            Alert alert1 = new Alert("Pedido no enviado", "Se produjo un error en el envío del pedido", null, AlertType.ERROR);
+            Display.getDisplay(this).setCurrent(alert1, getOrdersList());
+        }
+    }
+    
+    private void connecting(String msg) {
+        searching = new Form(msg);
+        searching.append(new Gauge("Conectando...", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+        cancel = new Command("Cancelar", Command.ITEM, 1);
+        searching.addCommand(cancel);
+        searching.setCommandListener(this);
+        Display.getDisplay(this).setCurrent(searching);
+    }
+    
+    public void showAlert(String title, String message, AlertType type) {
+        alert = new Alert(title, message, null, type);
+        exit = new Command("Salir", Command.EXIT, 1);
+        alert.addCommand(exit);
+        alert.setCommandListener(this);
+        Display.getDisplay(this).setCurrent(alert);
     }
 }

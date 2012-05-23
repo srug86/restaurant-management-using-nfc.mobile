@@ -4,7 +4,10 @@
  */
 package domain;
 
+import communications.BluetoothClient;
 import java.util.Vector;
+import javax.bluetooth.BluetoothStateException;
+import presentation.MobiCarta;
 
 /**
  *
@@ -37,8 +40,26 @@ public class ProductsListManager {
         return -1;
     }
     
-    public static boolean sendOrder(String btAddress) {
-        return true;
+    public static boolean sendOrder(String address, MobiCarta mbc) {
+        ProfileManager.client.setDNI(ProfileManager.loadFile(ProfileManager.dni));
+        String data = xmlOrdersBuilder();
+        if (!data.equals("")) {
+            try {
+                BluetoothClient bc = BluetoothClient.getBluetoothClient();
+                bc.sendData(address, data, 1, mbc);
+                return true;
+            }
+            catch (BluetoothStateException ex) {
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    public static boolean billRequest(String address, MobiCarta mbc) {
+        productsList = new Vector();
+        productsList.addElement(new Order("NFC Bill Request", 0));
+        return sendOrder(address, mbc);
     }
     
     private static String xmlOrdersBuilder() {
