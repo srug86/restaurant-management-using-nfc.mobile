@@ -901,8 +901,11 @@ return cancelSubtractCommand;
         if (ProductsListManager.sendOrder(bar, this))
             connecting("Enviando pedido");
         else {
+            this.showAlert("Pedido no enviado", "Se produjo un error en el envío del pedido", AlertType.ERROR);
+            /*
             Alert alert1 = new Alert("Pedido no enviado", "Se produjo un error en el envío del pedido", null, AlertType.ERROR);
             Display.getDisplay(this).setCurrent(alert1, getOrdersList());
+             * */
         }
     }
     

@@ -4,16 +4,22 @@
  */
 package domain;
 
+import com.sun.midp.io.j2me.storage.File;
 import communications.BluetoothClient;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import javax.bluetooth.BluetoothStateException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
+import javax.microedition.lcdui.AlertType;
 import presentation.MobiCarta;
-
+import org.kxml2.io.KXmlParser;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 /**
  *
  * @author Sergio
@@ -22,9 +28,7 @@ public class ProfileManager {
     
     public static String path = "file:///e:/mobiCarta/";
     
-    public static String profile = "profile.xml", dni = "dni.txt";
-    
-    public static Client client = new Client();
+    public static String profile = "profile.xml";
     
     public static boolean sendProfile(String address, MobiCarta mbc) {
         String data = loadFile(profile);
@@ -34,6 +38,7 @@ public class ProfileManager {
                 bc.sendData(address, data, 0, mbc);
                 return true;
             } catch (BluetoothStateException ex) {
+                mbc.showAlert("Error en la conexión Bluetooth", ex.getMessage(), AlertType.ERROR);
                 return false;
             }
         }
@@ -41,9 +46,8 @@ public class ProfileManager {
     }
     
     public static boolean saveProfile(Client c) {
-        client = c;
-        final String xml = xmlProfilesBuilder();
-        return createFile(profile, xml) && createFile(dni, client.getDNI());
+        final String xml = xmlProfilesBuilder(c);
+        return createFile(profile, xml);
     }
     
     private static boolean createFile(String fileName, String data) {
@@ -80,7 +84,11 @@ public class ProfileManager {
         return "";
     }
     
-    private static String xmlProfilesBuilder() {
+    public static Client loadProfile(MobiCarta mbc) {
+        return xmlProfilesDecoder(profile, mbc);
+    }
+    
+    private static String xmlProfilesBuilder(Client client) {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         xml += "<Profile>\n";
         if (client != null) {
@@ -99,5 +107,43 @@ public class ProfileManager {
         }
         xml += "</Profile>";
         return xml;
+    }
+    
+    private static Client xmlProfilesDecoder(String fileName, MobiCarta mbc) {
+        Client client = new Client();
+        try {
+            KXmlParser parser = new KXmlParser();
+            FileConnection file = (FileConnection)Connector.open(path + fileName, Connector.READ);
+            InputStreamReader is = new InputStreamReader(file.openInputStream());
+            parser.setInput(is);
+            parser.nextTag();
+            parser.require(XmlPullParser.START_TAG, null, "Profile");
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+                    if (parser.getName().equals("DNI"))
+                        client.setDNI(parser.nextText());
+                    else if (parser.getName().equals("Name"))
+                        client.setName(parser.nextText());
+                    else if (parser.getName().equals("Surname"))
+                        client.setSurname(parser.nextText());
+                    else if (parser.getName().equals("Street"))
+                        client.getAddress().setStreet(parser.nextText());
+                    else if (parser.getName().equals("Number"))
+                        client.getAddress().setNumber(parser.nextText());
+                    else if (parser.getName().equals("ZipCode"))
+                        client.getAddress().setZipCode(Integer.parseInt(parser.nextText()));
+                    else if (parser.getName().equals("Town"))
+                        client.getAddress().setTown(parser.nextText());
+                    else if (parser.getName().equals("State"))
+                        client.getAddress().setState(parser.nextText());
+                }
+            }
+            file.close();
+        } catch (XmlPullParserException ex) {
+            mbc.showAlert("Error en la conexión Bluetooth", ex.getMessage(), AlertType.ERROR);
+        } catch (IOException ex) {
+            mbc.showAlert("Error en la conexión Bluetooth", ex.getMessage(), AlertType.ERROR);
+        } 
+        return client;
     }
 }

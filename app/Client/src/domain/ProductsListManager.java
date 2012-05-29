@@ -7,6 +7,7 @@ package domain;
 import communications.BluetoothClient;
 import java.util.Vector;
 import javax.bluetooth.BluetoothStateException;
+import javax.microedition.lcdui.AlertType;
 import presentation.MobiCarta;
 
 /**
@@ -41,8 +42,7 @@ public class ProductsListManager {
     }
     
     public static boolean sendOrder(String address, MobiCarta mbc) {
-        ProfileManager.client.setDNI(ProfileManager.loadFile(ProfileManager.dni));
-        String data = xmlOrdersBuilder();
+        String data = xmlOrdersBuilder(mbc);
         if (!data.equals("")) {
             try {
                 BluetoothClient bc = BluetoothClient.getBluetoothClient();
@@ -50,6 +50,7 @@ public class ProductsListManager {
                 return true;
             }
             catch (BluetoothStateException ex) {
+                mbc.showAlert("Error en la conexión Bluetooth", ex.getMessage(), AlertType.ERROR);
                 return false;
             }
         }
@@ -62,11 +63,11 @@ public class ProductsListManager {
         return sendOrder(address, mbc);
     }
     
-    private static String xmlOrdersBuilder() {
+    private static String xmlOrdersBuilder(MobiCarta mbc) {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         xml += "<ClientOrder>\n";
         if (productsList != null) {
-            xml += "\t<Client dni=\"" + ProfileManager.client.getDNI() + "\"/>\n";
+            xml += "\t<Client dni=\"" + ProfileManager.loadProfile(mbc).getDNI() + "\"/>\n";
             xml += "\t<Products>\n";
             for (int i = 0; i < productsList.size(); i++)
                 xml += "\t\t<Product name=\"" + 

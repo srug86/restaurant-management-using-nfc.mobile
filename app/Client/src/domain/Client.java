@@ -13,7 +13,9 @@ public class Client {
     
     private Address address;
     
-    public Client() { }
+    public Client() { 
+        this.address = new Address();
+    }
     
     public Client(String dni, String name, String surname, Address address) {
         this.dni = dni;
