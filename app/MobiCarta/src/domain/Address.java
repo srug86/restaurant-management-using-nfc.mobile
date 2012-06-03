@@ -12,7 +12,9 @@ public class Address {
     private String street, number, town, state;
     private int zipCode;
     
-    public Address() { }
+    public Address() {
+        this.street = this.number = this.town = this.state = "";
+    }
     
     public Address(String street, String number, int zipCode, String town, String state) {
         this.street = street;

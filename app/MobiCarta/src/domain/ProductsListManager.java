@@ -67,7 +67,7 @@ public class ProductsListManager {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         xml += "<ClientOrder>\n";
         if (productsList != null) {
-            xml += "\t<Client dni=\"" + ProfileManager.loadProfile(mbc).getDNI() + "\"/>\n";
+            xml += "\t<Client dni=\"" + ProfileManager.loadClient(mbc).getDNI() + "\"/>\n";
             xml += "\t<Products>\n";
             for (int i = 0; i < productsList.size(); i++)
                 xml += "\t\t<Product name=\"" + 

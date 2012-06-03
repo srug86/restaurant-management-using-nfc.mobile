@@ -6,8 +6,10 @@ package presentation;
 
 import domain.Address;
 import domain.Client;
+import domain.FileIO;
 import domain.ProductsListManager;
 import domain.ProfileManager;
+import domain.RecommendationManager;
 import java.io.IOException;
 import java.util.Vector;
 import javax.microedition.contactless.ContactlessException;
@@ -49,11 +51,14 @@ private Form ordersList;
 private Alert success;
 private Alert error;
 private Form main;
-private ImageItem imageItem;
 private StringItem stringItem2;
-private Alert successSendingOL;
-private Alert errorSendingOL;
+private ImageItem imageItem;
+private StringItem stringItem3;
 private Alert subtractElement;
+private Alert checkpoint;
+private Form Opening;
+private ImageItem imageItem1;
+private StringItem sItemOpening;
 private Command exitProfileCommand;
 private Command saveCommand;
 private Command exitOLCommand;
@@ -64,8 +69,12 @@ private Command exitMainCommand;
 private Command exitOLECommand;
 private Command exitOLSCommand;
 private Command cancelSubtractCommand;
+private Command ProfileCommand;
+private Command exitCommand;
+private Command backCommand;
+private Command exitOpeningCommand;
 private Font font;
-private Image image1;
+private Image image;
 //</editor-fold>//GEN-END:|fields|0|
     /**
      * The MobiCarta constructor.
@@ -84,7 +93,6 @@ private void initialize () {//GEN-END:|0-initialize|0|0-preInitialize
         addNFCListener();
 //GEN-LINE:|0-initialize|1|0-postInitialize
 
-        
 }//GEN-BEGIN:|0-initialize|2|
 //</editor-fold>//GEN-END:|0-initialize|2|
 
@@ -94,8 +102,8 @@ private void initialize () {//GEN-END:|0-initialize|0|0-preInitialize
  */
 public void startMIDlet () {//GEN-END:|3-startMIDlet|0|3-preAction
         // write pre-action user code here
-//GEN-LINE:|3-startMIDlet|1|3-postAction
-        // write post-action user code here
+switchDisplayable (null, getMain ());//GEN-LINE:|3-startMIDlet|1|3-postAction
+        removeNDEFListener();
 }//GEN-BEGIN:|3-startMIDlet|2|
 //</editor-fold>//GEN-END:|3-startMIDlet|2|
 
@@ -136,40 +144,63 @@ display.setCurrent (alert, nextDisplayable);
  */
 public void commandAction (Command command, Displayable displayable) {//GEN-END:|7-commandAction|0|7-preCommandAction
  // write pre-action user code here
-if (displayable == error) {//GEN-BEGIN:|7-commandAction|1|42-preAction
-if (command == exitPECommand) {//GEN-END:|7-commandAction|1|42-preAction
+if (displayable == Opening) {//GEN-BEGIN:|7-commandAction|1|90-preAction
+if (command == exitOpeningCommand) {//GEN-END:|7-commandAction|1|90-preAction
  // write pre-action user code here
-//GEN-LINE:|7-commandAction|2|42-postAction
+exitMIDlet ();//GEN-LINE:|7-commandAction|2|90-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|3|59-preAction
-} else if (displayable == errorSendingOL) {
-if (command == exitOLECommand) {//GEN-END:|7-commandAction|3|59-preAction
+}//GEN-BEGIN:|7-commandAction|3|42-preAction
+} else if (displayable == error) {
+if (command == exitPECommand) {//GEN-END:|7-commandAction|3|42-preAction
  // write pre-action user code here
-//GEN-LINE:|7-commandAction|4|59-postAction
+switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|4|42-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|5|49-preAction
+}//GEN-BEGIN:|7-commandAction|5|76-preAction
 } else if (displayable == main) {
-if (command == exitMainCommand) {//GEN-END:|7-commandAction|5|49-preAction
- // write pre-action user code here
-//GEN-LINE:|7-commandAction|6|49-postAction
+if (command == ProfileCommand) {//GEN-END:|7-commandAction|5|76-preAction
+Client client = ProfileManager.loadClient(this);
+if (!client.getDNI().equals("")) {
+    getTxtFDNI().setString(client.getDNI());
+    getTxtFName().setString(client.getName());
+    getTxtFSurname().setString(client.getSurname());
+    getTxtFStreet().setString(client.getAddress().getStreet());
+    getTxtFNumber().setString(client.getAddress().getNumber());
+    getTxtFZipCode().setString(String.valueOf(client.getAddress().getZipCode()));
+    getTxtFTown().setString(client.getAddress().getTown());
+    getTxtFState().setString(client.getAddress().getState());
+    Display.getDisplay(this).setCurrent(getProfile());
+}
+else {
+    Alert alert1 = new Alert("Perfil no encontrado", "Complete el siguiente formulario con sus datos", null, AlertType.WARNING);
+    Display.getDisplay(this).setCurrent(alert1, getProfile());   
+}    
+//GEN-LINE:|7-commandAction|6|76-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|7|22-preAction
+} else if (command == exitMainCommand) {//GEN-LINE:|7-commandAction|7|49-preAction
+ // write pre-action user code here
+exitMIDlet ();//GEN-LINE:|7-commandAction|8|49-postAction
+ // write post-action user code here
+}//GEN-BEGIN:|7-commandAction|9|22-preAction
 } else if (displayable == ordersList) {
-if (command == exitOLCommand) {//GEN-END:|7-commandAction|7|22-preAction
+if (command == exitOLCommand) {//GEN-END:|7-commandAction|9|22-preAction
  // write pre-action user code here
-exitMIDlet ();//GEN-LINE:|7-commandAction|8|22-postAction
+exitMIDlet ();//GEN-LINE:|7-commandAction|10|22-postAction
  // write post-action user code here
-} else if (command == sendCommand) {//GEN-LINE:|7-commandAction|9|24-preAction
- // write pre-action user code here
-//GEN-LINE:|7-commandAction|10|24-postAction
+} else if (command == sendCommand) {//GEN-LINE:|7-commandAction|11|24-preAction
+sendOrder("");
+//GEN-LINE:|7-commandAction|12|24-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|11|17-preAction
+}//GEN-BEGIN:|7-commandAction|13|81-preAction
 } else if (displayable == profile) {
-if (command == exitProfileCommand) {//GEN-END:|7-commandAction|11|17-preAction
+if (command == backCommand) {//GEN-END:|7-commandAction|13|81-preAction
  // write pre-action user code here
-exitMIDlet ();//GEN-LINE:|7-commandAction|12|17-postAction
+switchDisplayable (null, getMain ());//GEN-LINE:|7-commandAction|14|81-postAction
  // write post-action user code here
-} else if (command == saveCommand) {//GEN-LINE:|7-commandAction|13|19-preAction
+} else if (command == exitProfileCommand) {//GEN-LINE:|7-commandAction|15|17-preAction
+ // write pre-action user code here
+exitMIDlet ();//GEN-LINE:|7-commandAction|16|17-postAction
+ // write post-action user code here
+} else if (command == saveCommand) {//GEN-LINE:|7-commandAction|17|19-preAction
 Address address = new Address(getTxtFStreet().getString(), getTxtFNumber().getString(),
         Integer.parseInt(getTxtFZipCode().getString()), getTxtFTown().getString(),
         getTxtFState().getString());
@@ -180,36 +211,30 @@ if (ProfileManager.saveProfile(client))
     getDisplay().setCurrent(getSuccess(), getProfile());
 else
     getDisplay().setCurrent(getError(), getProfile());
-//GEN-LINE:|7-commandAction|14|19-postAction
+//GEN-LINE:|7-commandAction|18|19-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|15|64-preAction
+}//GEN-BEGIN:|7-commandAction|19|64-preAction
 } else if (displayable == subtractElement) {
-if (command == cancelSubtractCommand) {//GEN-END:|7-commandAction|15|64-preAction
+if (command == cancelSubtractCommand) {//GEN-END:|7-commandAction|19|64-preAction
  // write pre-action user code here
-//GEN-LINE:|7-commandAction|16|64-postAction
+switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|20|64-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|17|44-preAction
+}//GEN-BEGIN:|7-commandAction|21|44-preAction
 } else if (displayable == success) {
-if (command == exitPSCommand) {//GEN-END:|7-commandAction|17|44-preAction
+if (command == exitPSCommand) {//GEN-END:|7-commandAction|21|44-preAction
  // write pre-action user code here
-//GEN-LINE:|7-commandAction|18|44-postAction
+switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|22|44-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|19|57-preAction
-} else if (displayable == successSendingOL) {
-if (command == exitOLSCommand) {//GEN-END:|7-commandAction|19|57-preAction
- // write pre-action user code here
-//GEN-LINE:|7-commandAction|20|57-postAction
- // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|21|7-postCommandAction
-}//GEN-END:|7-commandAction|21|7-postCommandAction
+}//GEN-BEGIN:|7-commandAction|23|7-postCommandAction
+}//GEN-END:|7-commandAction|23|7-postCommandAction
 else if (command == exit) {
     exitMIDlet();
 }
 else if (command == cancel) {
     exitMIDlet();
 }
-}//GEN-BEGIN:|7-commandAction|22|
-//</editor-fold>//GEN-END:|7-commandAction|22|
+}//GEN-BEGIN:|7-commandAction|24|
+//</editor-fold>//GEN-END:|7-commandAction|24|
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: profile ">//GEN-BEGIN:|14-getter|0|14-preInit
 /**
@@ -222,6 +247,7 @@ if (profile == null) {//GEN-END:|14-getter|0|14-preInit
 profile = new Form ("PERFIL DEL CLIENTE", new Item[] { getStringItem (), getTxtFDNI (), getTxtFName (), getTxtFSurname (), getStringItem1 (), getTxtFStreet (), getTxtFNumber (), getTxtFZipCode (), getTxtFTown (), getTxtFState () });//GEN-BEGIN:|14-getter|1|14-postInit
 profile.addCommand (getExitProfileCommand ());
 profile.addCommand (getSaveCommand ());
+profile.addCommand (getBackCommand ());
 profile.setCommandListener (this);//GEN-END:|14-getter|1|14-postInit
  // write post-init user code here
 }//GEN-BEGIN:|14-getter|2|
@@ -246,42 +272,6 @@ ordersList.setCommandListener (this);//GEN-END:|15-getter|1|15-postInit
 return ordersList;
 }
 //</editor-fold>//GEN-END:|15-getter|2|
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: error ">//GEN-BEGIN:|26-getter|0|26-preInit
-/**
- * Returns an initiliazed instance of error component.
- * @return the initialized component instance
- */
-public Alert getError () {
-if (error == null) {//GEN-END:|26-getter|0|26-preInit
- // write pre-init user code here
-error = new Alert ("PERFIL NO GUARDADO", "Fallo al escribir el perfil en el fichero", null, AlertType.ERROR);//GEN-BEGIN:|26-getter|1|26-postInit
-error.addCommand (getExitPECommand ());
-error.setCommandListener (this);
-error.setTimeout (Alert.FOREVER);//GEN-END:|26-getter|1|26-postInit
- // write post-init user code here
-}//GEN-BEGIN:|26-getter|2|
-return error;
-}
-//</editor-fold>//GEN-END:|26-getter|2|
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: success ">//GEN-BEGIN:|27-getter|0|27-preInit
-/**
- * Returns an initiliazed instance of success component.
- * @return the initialized component instance
- */
-public Alert getSuccess () {
-if (success == null) {//GEN-END:|27-getter|0|27-preInit
- // write pre-init user code here
-success = new Alert ("PERFIL ALMACENADO", "El perfil ha sido guardado satisfactoriamente", null, AlertType.CONFIRMATION);//GEN-BEGIN:|27-getter|1|27-postInit
-success.addCommand (getExitPSCommand ());
-success.setCommandListener (this);
-success.setTimeout (Alert.FOREVER);//GEN-END:|27-getter|1|27-postInit
- // write post-init user code here
-}//GEN-BEGIN:|27-getter|2|
-return success;
-}
-//</editor-fold>//GEN-END:|27-getter|2|
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitProfileCommand ">//GEN-BEGIN:|16-getter|0|16-preInit
 /**
@@ -321,7 +311,7 @@ return saveCommand;
 public Command getExitOLCommand () {
 if (exitOLCommand == null) {//GEN-END:|21-getter|0|21-preInit
  // write pre-init user code here
-exitOLCommand = new Command ("Exit", Command.EXIT, 0);//GEN-LINE:|21-getter|1|21-postInit
+exitOLCommand = new Command ("Salir", Command.EXIT, 0);//GEN-LINE:|21-getter|1|21-postInit
  // write post-init user code here
 }//GEN-BEGIN:|21-getter|2|
 return exitOLCommand;
@@ -336,7 +326,7 @@ return exitOLCommand;
 public Command getSendCommand () {
 if (sendCommand == null) {//GEN-END:|23-getter|0|23-preInit
  // write pre-init user code here
-sendCommand = new Command ("Ok", Command.OK, 0);//GEN-LINE:|23-getter|1|23-postInit
+sendCommand = new Command ("Enviar", Command.OK, 0);//GEN-LINE:|23-getter|1|23-postInit
  // write post-init user code here
 }//GEN-BEGIN:|23-getter|2|
 return sendCommand;
@@ -518,7 +508,7 @@ return font;
 public Command getExitPECommand () {
 if (exitPECommand == null) {//GEN-END:|41-getter|0|41-preInit
  // write pre-init user code here
-exitPECommand = new Command ("Exit", Command.EXIT, 0);//GEN-LINE:|41-getter|1|41-postInit
+exitPECommand = new Command ("Salir", Command.EXIT, 0);//GEN-LINE:|41-getter|1|41-postInit
  // write post-init user code here
 }//GEN-BEGIN:|41-getter|2|
 return exitPECommand;
@@ -533,7 +523,7 @@ return exitPECommand;
 public Command getExitPSCommand () {
 if (exitPSCommand == null) {//GEN-END:|43-getter|0|43-preInit
  // write pre-init user code here
-exitPSCommand = new Command ("Exit", Command.EXIT, 0);//GEN-LINE:|43-getter|1|43-postInit
+exitPSCommand = new Command ("Salir", Command.EXIT, 0);//GEN-LINE:|43-getter|1|43-postInit
  // write post-init user code here
 }//GEN-BEGIN:|43-getter|2|
 return exitPSCommand;
@@ -548,8 +538,9 @@ return exitPSCommand;
 public Form getMain () {
 if (main == null) {//GEN-END:|47-getter|0|47-preInit
  // write pre-init user code here
-main = new Form ("MobiCarta", new Item[] { getStringItem2 (), getImageItem () });//GEN-BEGIN:|47-getter|1|47-postInit
+main = new Form ("\u00A1Bienvenido a MobiCarta!", new Item[] { getStringItem2 (), getImageItem (), getStringItem3 () });//GEN-BEGIN:|47-getter|1|47-postInit
 main.addCommand (getExitMainCommand ());
+main.addCommand (getProfileCommand ());
 main.setCommandListener (this);//GEN-END:|47-getter|1|47-postInit
  // write post-init user code here
 }//GEN-BEGIN:|47-getter|2|
@@ -565,27 +556,12 @@ return main;
 public Command getExitMainCommand () {
 if (exitMainCommand == null) {//GEN-END:|48-getter|0|48-preInit
  // write pre-init user code here
-exitMainCommand = new Command ("Exit", Command.EXIT, 0);//GEN-LINE:|48-getter|1|48-postInit
+exitMainCommand = new Command ("Salir", Command.EXIT, 0);//GEN-LINE:|48-getter|1|48-postInit
  // write post-init user code here
 }//GEN-BEGIN:|48-getter|2|
 return exitMainCommand;
 }
 //</editor-fold>//GEN-END:|48-getter|2|
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imageItem ">//GEN-BEGIN:|51-getter|0|51-preInit
-/**
- * Returns an initiliazed instance of imageItem component.
- * @return the initialized component instance
- */
-public ImageItem getImageItem () {
-if (imageItem == null) {//GEN-END:|51-getter|0|51-preInit
- // write pre-init user code here
-imageItem = new ImageItem ("", getImage1 (), ImageItem.LAYOUT_DEFAULT, "<Missing Image>");//GEN-LINE:|51-getter|1|51-postInit
- // write post-init user code here
-}//GEN-BEGIN:|51-getter|2|
-return imageItem;
-}
-//</editor-fold>//GEN-END:|51-getter|2|
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem2 ">//GEN-BEGIN:|52-getter|0|52-preInit
 /**
@@ -595,67 +571,12 @@ return imageItem;
 public StringItem getStringItem2 () {
 if (stringItem2 == null) {//GEN-END:|52-getter|0|52-preInit
  // write pre-init user code here
-stringItem2 = new StringItem ("Toque una etiqueta para iniciar la acci\u00F3n...", "");//GEN-LINE:|52-getter|1|52-postInit
+stringItem2 = new StringItem ("", "S\u00E1quele partido a la tecnolog\u00EDa NFC de su m\u00F3vil");//GEN-LINE:|52-getter|1|52-postInit
  // write post-init user code here
 }//GEN-BEGIN:|52-getter|2|
 return stringItem2;
 }
 //</editor-fold>//GEN-END:|52-getter|2|
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: image1 ">//GEN-BEGIN:|53-getter|0|53-preInit
-/**
- * Returns an initiliazed instance of image1 component.
- * @return the initialized component instance
- */
-public Image getImage1 () {
-if (image1 == null) {//GEN-END:|53-getter|0|53-preInit
- // write pre-init user code here
-try {//GEN-BEGIN:|53-getter|1|53-@java.io.IOException
-image1 = Image.createImage ("/touch.png");
-} catch (java.io.IOException e) {//GEN-END:|53-getter|1|53-@java.io.IOException
-e.printStackTrace ();
-}//GEN-LINE:|53-getter|2|53-postInit
- // write post-init user code here
-}//GEN-BEGIN:|53-getter|3|
-return image1;
-}
-//</editor-fold>//GEN-END:|53-getter|3|
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: errorSendingOL ">//GEN-BEGIN:|54-getter|0|54-preInit
-/**
- * Returns an initiliazed instance of errorSendingOL component.
- * @return the initialized component instance
- */
-public Alert getErrorSendingOL () {
-if (errorSendingOL == null) {//GEN-END:|54-getter|0|54-preInit
- // write pre-init user code here
-errorSendingOL = new Alert ("PEDIDO NO ENVIADO", "Se produjo un fallo al enviar el pedido", null, null);//GEN-BEGIN:|54-getter|1|54-postInit
-errorSendingOL.addCommand (getExitOLECommand ());
-errorSendingOL.setCommandListener (this);
-errorSendingOL.setTimeout (Alert.FOREVER);//GEN-END:|54-getter|1|54-postInit
- // write post-init user code here
-}//GEN-BEGIN:|54-getter|2|
-return errorSendingOL;
-}
-//</editor-fold>//GEN-END:|54-getter|2|
-
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: successSendingOL ">//GEN-BEGIN:|55-getter|0|55-preInit
-/**
- * Returns an initiliazed instance of successSendingOL component.
- * @return the initialized component instance
- */
-public Alert getSuccessSendingOL () {
-if (successSendingOL == null) {//GEN-END:|55-getter|0|55-preInit
- // write pre-init user code here
-successSendingOL = new Alert ("PEDIDO CONFIRMADO", "Pedido enviado satisfactoriamente", null, null);//GEN-BEGIN:|55-getter|1|55-postInit
-successSendingOL.addCommand (getExitOLSCommand ());
-successSendingOL.setCommandListener (this);
-successSendingOL.setTimeout (Alert.FOREVER);//GEN-END:|55-getter|1|55-postInit
- // write post-init user code here
-}//GEN-BEGIN:|55-getter|2|
-return successSendingOL;
-}
-//</editor-fold>//GEN-END:|55-getter|2|
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitOLSCommand ">//GEN-BEGIN:|56-getter|0|56-preInit
 /**
@@ -687,6 +608,57 @@ return exitOLECommand;
 }
 //</editor-fold>//GEN-END:|58-getter|2|
 
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelSubtractCommand ">//GEN-BEGIN:|63-getter|0|63-preInit
+/**
+ * Returns an initiliazed instance of cancelSubtractCommand component.
+ * @return the initialized component instance
+ */
+public Command getCancelSubtractCommand () {
+if (cancelSubtractCommand == null) {//GEN-END:|63-getter|0|63-preInit
+ // write pre-init user code here
+cancelSubtractCommand = new Command ("Cancelar", Command.CANCEL, 0);//GEN-LINE:|63-getter|1|63-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|63-getter|2|
+return cancelSubtractCommand;
+}
+//</editor-fold>//GEN-END:|63-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: error ">//GEN-BEGIN:|26-getter|0|26-preInit
+/**
+ * Returns an initiliazed instance of error component.
+ * @return the initialized component instance
+ */
+public Alert getError () {
+if (error == null) {//GEN-END:|26-getter|0|26-preInit
+ // write pre-init user code here
+error = new Alert ("PERFIL NO GUARDADO", "Fallo al escribir el perfil en el fichero", null, AlertType.ERROR);//GEN-BEGIN:|26-getter|1|26-postInit
+error.addCommand (getExitPECommand ());
+error.setCommandListener (this);
+error.setTimeout (Alert.FOREVER);//GEN-END:|26-getter|1|26-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|26-getter|2|
+return error;
+}
+//</editor-fold>//GEN-END:|26-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: success ">//GEN-BEGIN:|27-getter|0|27-preInit
+/**
+ * Returns an initiliazed instance of success component.
+ * @return the initialized component instance
+ */
+public Alert getSuccess () {
+if (success == null) {//GEN-END:|27-getter|0|27-preInit
+ // write pre-init user code here
+success = new Alert ("PERFIL ALMACENADO", "El perfil ha sido guardado satisfactoriamente", null, AlertType.CONFIRMATION);//GEN-BEGIN:|27-getter|1|27-postInit
+success.addCommand (getExitPSCommand ());
+success.setCommandListener (this);
+success.setTimeout (Alert.FOREVER);//GEN-END:|27-getter|1|27-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|27-getter|2|
+return success;
+}
+//</editor-fold>//GEN-END:|27-getter|2|
+
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: subtractElement ">//GEN-BEGIN:|62-getter|0|62-preInit
 /**
  * Returns an initiliazed instance of subtractElement component.
@@ -705,20 +677,179 @@ return subtractElement;
 }
 //</editor-fold>//GEN-END:|62-getter|2|
 
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelSubtractCommand ">//GEN-BEGIN:|63-getter|0|63-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imageItem ">//GEN-BEGIN:|71-getter|0|71-preInit
 /**
- * Returns an initiliazed instance of cancelSubtractCommand component.
+ * Returns an initiliazed instance of imageItem component.
  * @return the initialized component instance
  */
-public Command getCancelSubtractCommand () {
-if (cancelSubtractCommand == null) {//GEN-END:|63-getter|0|63-preInit
+public ImageItem getImageItem () {
+if (imageItem == null) {//GEN-END:|71-getter|0|71-preInit
  // write pre-init user code here
-cancelSubtractCommand = new Command ("Cancel", Command.CANCEL, 0);//GEN-LINE:|63-getter|1|63-postInit
+imageItem = new ImageItem ("", getImage (), ImageItem.LAYOUT_CENTER | Item.LAYOUT_TOP | Item.LAYOUT_BOTTOM | Item.LAYOUT_VCENTER | ImageItem.LAYOUT_NEWLINE_BEFORE, "<Missing Image>");//GEN-LINE:|71-getter|1|71-postInit
  // write post-init user code here
-}//GEN-BEGIN:|63-getter|2|
-return cancelSubtractCommand;
+}//GEN-BEGIN:|71-getter|2|
+return imageItem;
 }
-//</editor-fold>//GEN-END:|63-getter|2|
+//</editor-fold>//GEN-END:|71-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: image ">//GEN-BEGIN:|72-getter|0|72-preInit
+/**
+ * Returns an initiliazed instance of image component.
+ * @return the initialized component instance
+ */
+public Image getImage () {
+if (image == null) {//GEN-END:|72-getter|0|72-preInit
+ // write pre-init user code here
+try {//GEN-BEGIN:|72-getter|1|72-@java.io.IOException
+image = Image.createImage ("/ico2.png");
+} catch (java.io.IOException e) {//GEN-END:|72-getter|1|72-@java.io.IOException
+e.printStackTrace ();
+}//GEN-LINE:|72-getter|2|72-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|72-getter|3|
+return image;
+}
+//</editor-fold>//GEN-END:|72-getter|3|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem3 ">//GEN-BEGIN:|74-getter|0|74-preInit
+/**
+ * Returns an initiliazed instance of stringItem3 component.
+ * @return the initialized component instance
+ */
+public StringItem getStringItem3 () {
+if (stringItem3 == null) {//GEN-END:|74-getter|0|74-preInit
+ // write pre-init user code here
+stringItem3 = new StringItem ("", "Acerque su m\u00F3vil a una etiqueta para iniciar la acci\u00F3n...");//GEN-LINE:|74-getter|1|74-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|74-getter|2|
+return stringItem3;
+}
+//</editor-fold>//GEN-END:|74-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: ProfileCommand ">//GEN-BEGIN:|75-getter|0|75-preInit
+/**
+ * Returns an initiliazed instance of ProfileCommand component.
+ * @return the initialized component instance
+ */
+public Command getProfileCommand () {
+if (ProfileCommand == null) {//GEN-END:|75-getter|0|75-preInit
+ // write pre-init user code here
+ProfileCommand = new Command ("Perfil", Command.ITEM, 0);//GEN-LINE:|75-getter|1|75-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|75-getter|2|
+return ProfileCommand;
+}
+//</editor-fold>//GEN-END:|75-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: backCommand ">//GEN-BEGIN:|80-getter|0|80-preInit
+/**
+ * Returns an initiliazed instance of backCommand component.
+ * @return the initialized component instance
+ */
+public Command getBackCommand () {
+if (backCommand == null) {//GEN-END:|80-getter|0|80-preInit
+ // write pre-init user code here
+backCommand = new Command ("Volver", Command.BACK, 0);//GEN-LINE:|80-getter|1|80-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|80-getter|2|
+return backCommand;
+}
+//</editor-fold>//GEN-END:|80-getter|2|
+
+
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: checkpoint ">//GEN-BEGIN:|84-getter|0|84-preInit
+/**
+ * Returns an initiliazed instance of checkpoint component.
+ * @return the initialized component instance
+ */
+public Alert getCheckpoint () {
+if (checkpoint == null) {//GEN-END:|84-getter|0|84-preInit
+ // write pre-init user code here
+checkpoint = new Alert ("Registro de usuarios", "Registro efectuado satisfactoriamente", null, AlertType.CONFIRMATION);//GEN-BEGIN:|84-getter|1|84-postInit
+checkpoint.setTimeout (3000);//GEN-END:|84-getter|1|84-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|84-getter|2|
+return checkpoint;
+}
+//</editor-fold>//GEN-END:|84-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">//GEN-BEGIN:|85-getter|0|85-preInit
+/**
+ * Returns an initiliazed instance of exitCommand component.
+ * @return the initialized component instance
+ */
+public Command getExitCommand () {
+if (exitCommand == null) {//GEN-END:|85-getter|0|85-preInit
+ // write pre-init user code here
+exitCommand = new Command ("Salir", Command.EXIT, 0);//GEN-LINE:|85-getter|1|85-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|85-getter|2|
+return exitCommand;
+}
+//</editor-fold>//GEN-END:|85-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: Opening ">//GEN-BEGIN:|88-getter|0|88-preInit
+/**
+ * Returns an initiliazed instance of Opening component.
+ * @return the initialized component instance
+ */
+public Form getOpening () {
+if (Opening == null) {//GEN-END:|88-getter|0|88-preInit
+ // write pre-init user code here
+Opening = new Form ("Estimado cliente:", new Item[] { getImageItem1 (), getSItemOpening () });//GEN-BEGIN:|88-getter|1|88-postInit
+Opening.addCommand (getExitOpeningCommand ());
+Opening.setCommandListener (this);//GEN-END:|88-getter|1|88-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|88-getter|2|
+return Opening;
+}
+//</editor-fold>//GEN-END:|88-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imageItem1 ">//GEN-BEGIN:|92-getter|0|92-preInit
+/**
+ * Returns an initiliazed instance of imageItem1 component.
+ * @return the initialized component instance
+ */
+public ImageItem getImageItem1 () {
+if (imageItem1 == null) {//GEN-END:|92-getter|0|92-preInit
+ // write pre-init user code here
+imageItem1 = new ImageItem ("", getImage (), ImageItem.LAYOUT_CENTER | Item.LAYOUT_TOP | Item.LAYOUT_BOTTOM | Item.LAYOUT_VCENTER, "<Missing Image>");//GEN-LINE:|92-getter|1|92-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|92-getter|2|
+return imageItem1;
+}
+//</editor-fold>//GEN-END:|92-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: sItemOpening ">//GEN-BEGIN:|93-getter|0|93-preInit
+/**
+ * Returns an initiliazed instance of sItemOpening component.
+ * @return the initialized component instance
+ */
+public StringItem getSItemOpening () {
+if (sItemOpening == null) {//GEN-END:|93-getter|0|93-preInit
+ // write pre-init user code here
+sItemOpening = new StringItem ("", "");//GEN-LINE:|93-getter|1|93-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|93-getter|2|
+return sItemOpening;
+}
+//</editor-fold>//GEN-END:|93-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitOpeningCommand ">//GEN-BEGIN:|89-getter|0|89-preInit
+/**
+ * Returns an initiliazed instance of exitOpeningCommand component.
+ * @return the initialized component instance
+ */
+public Command getExitOpeningCommand () {
+if (exitOpeningCommand == null) {//GEN-END:|89-getter|0|89-preInit
+ // write pre-init user code here
+exitOpeningCommand = new Command ("Salir", Command.EXIT, 0);//GEN-LINE:|89-getter|1|89-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|89-getter|2|
+return exitOpeningCommand;
+}
+//</editor-fold>//GEN-END:|89-getter|2|
 
     /* Metodo para registrar el Listener NFC y capturar sus errores */
     public void addNFCListener(){
@@ -838,7 +969,7 @@ return cancelSubtractCommand;
     }
     
     private void clientRegister(String receiver) {
-        if (!ProfileManager.loadFile(ProfileManager.profile).equals("")) {
+        if (!FileIO.loadFile(ProfileManager.path).equals("")) {
             if (ProfileManager.sendProfile(receiver, this))
                 connecting("Registrando cliente");
             else

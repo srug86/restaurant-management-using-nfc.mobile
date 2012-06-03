@@ -14,6 +14,7 @@ public class Client {
     private Address address;
     
     public Client() { 
+        this.dni = this.name = this.surname = "";
         this.address = new Address();
     }
     

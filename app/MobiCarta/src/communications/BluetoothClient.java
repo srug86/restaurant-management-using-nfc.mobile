@@ -4,6 +4,7 @@
  */
 package communications;
 
+import domain.RecommendationManager;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -122,7 +123,11 @@ public class BluetoothClient implements DiscoveryListener {
                 out.writeUTF(data);
                 if (out != null) out.close();
                 if (connection != null) connection.close();
-                if (rcv == 0) mbc.showAlert("Registro de usuarios", "Registro efectuado", AlertType.CONFIRMATION);
+                //if (rcv == 0) mbc.showAlert("Registro de usuarios", "Registro efectuado", AlertType.CONFIRMATION);
+                if (rcv == 0) {
+                    RecommendationManager.catchRecommendation("", mbc);
+                    mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
+                }
                 else mbc.showAlert("Solicitud de pedidos", "Su pedido está en camino", AlertType.CONFIRMATION);
                 //out.flush();
                 //response = in.readUTF();
