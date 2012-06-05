@@ -35,6 +35,7 @@ public class MobiCarta extends MIDlet implements CommandListener, NDEFRecordList
     private Alert alert;
     private Command exit, cancel;
     private Form searching;
+    private boolean nfcStart = false;
 //<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
 private Form profile;
 private StringItem stringItem;
@@ -57,8 +58,8 @@ private StringItem stringItem3;
 private Alert subtractElement;
 private Alert checkpoint;
 private Form Opening;
-private ImageItem imageItem1;
 private StringItem sItemOpening;
+private ImageItem imageItem1;
 private Command exitProfileCommand;
 private Command saveCommand;
 private Command exitOLCommand;
@@ -102,8 +103,10 @@ private void initialize () {//GEN-END:|0-initialize|0|0-preInitialize
  */
 public void startMIDlet () {//GEN-END:|3-startMIDlet|0|3-preAction
         // write pre-action user code here
-switchDisplayable (null, getMain ());//GEN-LINE:|3-startMIDlet|1|3-postAction
+//GEN-LINE:|3-startMIDlet|1|3-postAction
         removeNDEFListener();
+        if (!nfcStart)
+            getDisplay().setCurrent(getMain());
 }//GEN-BEGIN:|3-startMIDlet|2|
 //</editor-fold>//GEN-END:|3-startMIDlet|2|
 
@@ -939,8 +942,9 @@ return exitOpeningCommand;
     }
 
     public void recordDetected(NDEFMessage ndefm) {
-        tagProcessing(ndefm);
+        nfcStart = true;
         removeNDEFListener();
+        tagProcessing(ndefm);
     }
     
     private void tagProcessing(NDEFMessage message) {
