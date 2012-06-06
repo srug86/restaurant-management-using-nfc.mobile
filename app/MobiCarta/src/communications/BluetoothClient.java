@@ -5,9 +5,12 @@
 package communications;
 
 import domain.RecommendationManager;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.DeviceClass;
@@ -114,39 +117,36 @@ public class BluetoothClient implements DiscoveryListener {
             service = srs[i];
             String url = service.getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
             StreamConnection connection = null;
-            //DataInputStream in = null;
+            DataInputStream in = null;
             DataOutputStream out = null;
+            String reply = "";
             try {
                 connection = (StreamConnection)Connector.open(url);
-                //in = connection.openDataInputStream();
                 out = connection.openDataOutputStream();
+                in = connection.openDataInputStream();
                 out.writeUTF(data);
-                if (out != null) out.close();
-                if (connection != null) connection.close();
-                //if (rcv == 0) mbc.showAlert("Registro de usuarios", "Registro efectuado", AlertType.CONFIRMATION);
-                if (rcv == 0) {
-                    RecommendationManager.catchRecommendation("", mbc);
-                    mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
-                }
-                else mbc.showAlert("Solicitud de pedidos", "Su pedido está en camino", AlertType.CONFIRMATION);
-                //out.flush();
-                //response = in.readUTF();
-                //mbc.showAlert("Registro de usuarios", response, AlertType.CONFIRMATION);
+                out.flush();
+                /*do {
+                    reply += in.readUTF();
+                } while(!reply.endsWith("</Recommendations>"));*/
+                reply = in.readUTF();
             } catch (IOException e) {
-                mbc.showAlert("Error de entrada/salida", e.getMessage(), AlertType.ERROR);
+                mbc.showAlert("Error de entrada/salida", "Holaaaa!!!", AlertType.ERROR);
             } finally {
-                finishSearches();
-            }/*
                 try {
-                    //if (in != null) in.close();
+                    if (in != null) in.close();
                     if (out != null) out.close();
                     if (connection != null) connection.close();
-                    if (rcv == 0) mbc.showAlert("Registro de usuarios", response, AlertType.CONFIRMATION);
-                    else mbc.showAlert("Solicitud de pedidos", response, AlertType.CONFIRMATION);
+                    if (rcv == 0) {
+                        RecommendationManager.catchRecommendation(reply, mbc);
+                        mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
+                    }
+                    else mbc.showAlert("Solicitud de pedidos", "Su pedido está en camino", AlertType.CONFIRMATION);
+                    finishSearches();
                 } catch (IOException e) {
                     mbc.showAlert("Error de entrada/salida", e.getMessage(), AlertType.ERROR);
                 }
-            }*/
+            }
         }
     }
 

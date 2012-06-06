@@ -1058,6 +1058,7 @@ return exitOpeningCommand;
         exit = new Command("Salir", Command.EXIT, 1);
         alert.addCommand(exit);
         alert.setCommandListener(this);
+        alert.setTimeout(5000);
         Display.getDisplay(this).setCurrent(alert);
     }
 }

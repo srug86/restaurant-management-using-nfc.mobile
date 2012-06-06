@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClientOrder>
+	<Client dni="05692939W"/>
+	<Products>
+		<Product name="Coca Cola 200ml" amount="2"/>
+		<Product name="Solomillo a la pimienta" amount="2"/>
+		<Product name="Tarta helada" amount="2"/>
+	</Products>
+</ClientOrder>
