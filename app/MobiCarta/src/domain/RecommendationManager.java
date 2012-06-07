@@ -25,8 +25,9 @@ public class RecommendationManager {
     
     public static void catchRecommendation(String xml, MobiCarta mbc) {
         //FileIO.createFile(path, xml);
-        xmlRecommendationDecoder(path, mbc);
-        mbc.getSItemOpening().setText(recommendation.getOpening());
+        //xmlRecommendationDecoder(path, mbc);
+        //mbc.getSItemOpening().setText(recommendation.getOpening());
+        mbc.getSItemOpening().setText(xml);
     }
     
     private static void xmlRecommendationDecoder(String file, MobiCarta mbc) {
