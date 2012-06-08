@@ -59,7 +59,7 @@ public class ProductsListManager {
     
     public static boolean billRequest(String address, MobiCarta mbc) {
         productsList = new Vector();
-        productsList.addElement(new Order("NFC Bill Request", 0));
+        productsList.addElement(new Order("Solicitud de facturacion", 0));
         return sendOrder(address, mbc);
     }
     
@@ -75,7 +75,7 @@ public class ProductsListManager {
                         ((Order)productsList.elementAt(i)).getAmount() + "\"/>\n";
             xml += "\t</Products>\n";
         }
-        xml += "</ClientOrder>";
+        xml += "</ClientOrder>\n";
         return xml;
     }
 }

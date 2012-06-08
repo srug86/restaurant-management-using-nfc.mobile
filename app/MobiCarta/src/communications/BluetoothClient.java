@@ -119,36 +119,35 @@ public class BluetoothClient implements DiscoveryListener {
             StreamConnection connection = null;
             DataInputStream in = null;
             DataOutputStream out = null;
-            String reply = "";
-            byte[] r = new byte[5120];
+            byte[] reply = new byte[5120];
             try {
                 connection = (StreamConnection)Connector.open(url);
-                //out = connection.openDataOutputStream();
+                out = connection.openDataOutputStream();
                 in = connection.openDataInputStream();
-                //out.writeUTF(data);
-                //out.flush();
-                /*do {
-                    reply += in.readUTF();
-                } while(!reply.endsWith("</Recommendations>"));*/
+                out.writeUTF(data);
+                out.flush();
                 int rd = 0;
-                //byte[] r = new byte[5120];
-                while( (rd = in.read(r)) <= 0){};
+                while( (rd = in.read(reply)) <= 0);
             } catch (IOException e) {
-                mbc.showAlert("Error de entrada/salida", "Holaaaa!!!", AlertType.ERROR);
+                mbc.showAlert("Error de entrada/salida", e.toString(), AlertType.ERROR);
             } finally {
                 try {
+                    finishSearches();
                     if (in != null) in.close();
                     if (out != null) out.close();
-                    if (connection != null) connection.close();
+                    if (connection != null) connection.close();                    
                     if (rcv == 0) {
-                        mbc.showAlert("Salida", new String(r), AlertType.CONFIRMATION);
-                    }
-                    /*if (rcv == 0) {
-                        RecommendationManager.catchRecommendation(reply, mbc);
+                        RecommendationManager.catchRecommendation(new String(reply, "ASCII"), mbc);
                         mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
-                    }*/
-                    else mbc.showAlert("Solicitud de pedidos", "Su pedido está en camino", AlertType.CONFIRMATION);
-                    finishSearches();
+                    }
+                    else {
+                        String msg = new String(reply, "ASCII");
+                        if (msg.substring(0, 1).equals("<"))
+                            mbc.showAlert("Solicitud de factura", msg, AlertType.CONFIRMATION);
+                        else if (msg.substring(0, 5).equals("ERROR"))
+                            mbc.showAlert("Solicitud de pedidos", msg, AlertType.ERROR);
+                        else mbc.showAlert("Solicitud de pedidos", msg, AlertType.CONFIRMATION);
+                    }
                 } catch (IOException e) {
                     mbc.showAlert("Error de entrada/salida", e.getMessage(), AlertType.ERROR);
                 }

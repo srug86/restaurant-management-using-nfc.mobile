@@ -24,13 +24,12 @@ public class RecommendationManager {
     public static String path = "file:///e:/mobiCarta/recommendations.xml";
     
     public static void catchRecommendation(String xml, MobiCarta mbc) {
-        //FileIO.createFile(path, xml);
-        //xmlRecommendationDecoder(path, mbc);
-        //mbc.getSItemOpening().setText(recommendation.getOpening());
-        mbc.getSItemOpening().setText(xml);
+        FileIO.createFile(path, xml);
+        xmlRecommendationDecoder(path);
+        mbc.getSItemOpening().setText(recommendation.getOpening());
     }
     
-    private static void xmlRecommendationDecoder(String file, MobiCarta mbc) {
+    private static void xmlRecommendationDecoder(String file) {
         KXmlParser parser = new KXmlParser();
         try {
             FileConnection fileCon = (FileConnection)Connector.open(file, Connector.READ);
