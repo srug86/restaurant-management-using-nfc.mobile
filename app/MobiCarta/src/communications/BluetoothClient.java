@@ -4,6 +4,7 @@
  */
 package communications;
 
+import domain.BillManager;
 import domain.RecommendationManager;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -101,11 +102,6 @@ public class BluetoothClient implements DiscoveryListener {
         try {
             int transId = discoveryAgent.searchServices(ATRIBUTES, SERVICES, rd, this);
             searches.addElement(new Integer(transId));
-            //if (srvAddress.equals(address))
-            //{
-                //Alert alert = new Alert("Dispositivo", device, null, AlertType.CONFIRMATION);
-                //Display.getDisplay(mbc).setCurrent(alert);
-            //}
         } catch(BluetoothStateException e) {
             mbc.showAlert("Error en la conexión Bluetooth", e.getMessage(), AlertType.ERROR);
         }
@@ -135,18 +131,24 @@ public class BluetoothClient implements DiscoveryListener {
                     finishSearches();
                     if (in != null) in.close();
                     if (out != null) out.close();
-                    if (connection != null) connection.close();                    
-                    if (rcv == 0) {
-                        RecommendationManager.catchRecommendation(new String(reply, "ASCII"), mbc);
-                        mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
-                    }
-                    else {
-                        String msg = new String(reply, "ASCII");
-                        if (msg.substring(0, 1).equals("<"))
-                            mbc.showAlert("Solicitud de factura", msg, AlertType.CONFIRMATION);
-                        else if (msg.substring(0, 5).equals("ERROR"))
-                            mbc.showAlert("Solicitud de pedidos", msg, AlertType.ERROR);
-                        else mbc.showAlert("Solicitud de pedidos", msg, AlertType.CONFIRMATION);
+                    if (connection != null) connection.close();
+                    String msg = new String(reply, "ASCII");
+                    switch (rcv) {
+                        case 0:
+                            RecommendationManager.catchRecommendation(msg, mbc);
+                            mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
+                            break;
+                        case 1:
+                            if (msg.substring(0, 5).equals("ERROR"))
+                                mbc.showAlert("Solicitud de pedidos", msg, AlertType.ERROR);
+                            else mbc.showAlert("Solicitud de pedidos", msg, AlertType.CONFIRMATION);
+                            break;
+                        case 2:
+                            BillManager.catchBill(msg, mbc);
+                            mbc.getDisplay().setCurrent(mbc.getBill());
+                            break;
+                        default:
+                            break;
                     }
                 } catch (IOException e) {
                     mbc.showAlert("Error de entrada/salida", e.getMessage(), AlertType.ERROR);

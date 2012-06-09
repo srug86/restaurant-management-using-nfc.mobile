@@ -41,12 +41,12 @@ public class ProductsListManager {
         return -1;
     }
     
-    public static boolean sendOrder(String address, MobiCarta mbc) {
+    public static boolean sendOrder(String address, int type, MobiCarta mbc) {
         String data = xmlOrdersBuilder(mbc);
         if (!data.equals("")) {
             try {
                 BluetoothClient bc = BluetoothClient.getBluetoothClient();
-                bc.sendData(address, data, 1, mbc);
+                bc.sendData(address, data, type, mbc);
                 return true;
             }
             catch (BluetoothStateException ex) {
@@ -60,7 +60,7 @@ public class ProductsListManager {
     public static boolean billRequest(String address, MobiCarta mbc) {
         productsList = new Vector();
         productsList.addElement(new Order("Solicitud de facturacion", 0));
-        return sendOrder(address, mbc);
+        return sendOrder(address, 2, mbc);
     }
     
     private static String xmlOrdersBuilder(MobiCarta mbc) {

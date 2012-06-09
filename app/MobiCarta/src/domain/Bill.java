@@ -40,6 +40,14 @@ public class Bill {
         this.date = d;
     }
     
+    public int getTable() {
+        return this.table;
+    }
+    
+    public void setTable(int t) {
+        this.table = t;
+    }
+    
     public Vector getOrders() {
         return this.orders;
     }

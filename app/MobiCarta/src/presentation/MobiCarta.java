@@ -60,6 +60,7 @@ private Alert checkpoint;
 private Form Opening;
 private StringItem sItemOpening;
 private ImageItem imageItem1;
+private Form bill;
 private Command exitProfileCommand;
 private Command saveCommand;
 private Command exitOLCommand;
@@ -74,6 +75,7 @@ private Command ProfileCommand;
 private Command exitCommand;
 private Command backCommand;
 private Command exitOpeningCommand;
+private Command exitBillCommand;
 private Font font;
 private Image image;
 //</editor-fold>//GEN-END:|fields|0|
@@ -152,15 +154,21 @@ if (command == exitOpeningCommand) {//GEN-END:|7-commandAction|1|90-preAction
  // write pre-action user code here
 exitMIDlet ();//GEN-LINE:|7-commandAction|2|90-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|3|42-preAction
-} else if (displayable == error) {
-if (command == exitPECommand) {//GEN-END:|7-commandAction|3|42-preAction
+}//GEN-BEGIN:|7-commandAction|3|96-preAction
+} else if (displayable == bill) {
+if (command == exitBillCommand) {//GEN-END:|7-commandAction|3|96-preAction
  // write pre-action user code here
-switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|4|42-postAction
+exitMIDlet ();//GEN-LINE:|7-commandAction|4|96-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|5|76-preAction
+}//GEN-BEGIN:|7-commandAction|5|42-preAction
+} else if (displayable == error) {
+if (command == exitPECommand) {//GEN-END:|7-commandAction|5|42-preAction
+ // write pre-action user code here
+switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|6|42-postAction
+ // write post-action user code here
+}//GEN-BEGIN:|7-commandAction|7|76-preAction
 } else if (displayable == main) {
-if (command == ProfileCommand) {//GEN-END:|7-commandAction|5|76-preAction
+if (command == ProfileCommand) {//GEN-END:|7-commandAction|7|76-preAction
 Client client = ProfileManager.loadClient(this);
 if (!client.getDNI().equals("")) {
     getTxtFDNI().setString(client.getDNI());
@@ -177,33 +185,33 @@ else {
     Alert alert1 = new Alert("Perfil no encontrado", "Complete el siguiente formulario con sus datos", null, AlertType.WARNING);
     Display.getDisplay(this).setCurrent(alert1, getProfile());   
 }    
-//GEN-LINE:|7-commandAction|6|76-postAction
+//GEN-LINE:|7-commandAction|8|76-postAction
  // write post-action user code here
-} else if (command == exitMainCommand) {//GEN-LINE:|7-commandAction|7|49-preAction
+} else if (command == exitMainCommand) {//GEN-LINE:|7-commandAction|9|49-preAction
  // write pre-action user code here
-exitMIDlet ();//GEN-LINE:|7-commandAction|8|49-postAction
+exitMIDlet ();//GEN-LINE:|7-commandAction|10|49-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|9|22-preAction
+}//GEN-BEGIN:|7-commandAction|11|22-preAction
 } else if (displayable == ordersList) {
-if (command == exitOLCommand) {//GEN-END:|7-commandAction|9|22-preAction
+if (command == exitOLCommand) {//GEN-END:|7-commandAction|11|22-preAction
  // write pre-action user code here
-exitMIDlet ();//GEN-LINE:|7-commandAction|10|22-postAction
+exitMIDlet ();//GEN-LINE:|7-commandAction|12|22-postAction
  // write post-action user code here
-} else if (command == sendCommand) {//GEN-LINE:|7-commandAction|11|24-preAction
+} else if (command == sendCommand) {//GEN-LINE:|7-commandAction|13|24-preAction
 sendOrder("");
-//GEN-LINE:|7-commandAction|12|24-postAction
+//GEN-LINE:|7-commandAction|14|24-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|13|81-preAction
+}//GEN-BEGIN:|7-commandAction|15|81-preAction
 } else if (displayable == profile) {
-if (command == backCommand) {//GEN-END:|7-commandAction|13|81-preAction
+if (command == backCommand) {//GEN-END:|7-commandAction|15|81-preAction
  // write pre-action user code here
-switchDisplayable (null, getMain ());//GEN-LINE:|7-commandAction|14|81-postAction
+switchDisplayable (null, getMain ());//GEN-LINE:|7-commandAction|16|81-postAction
  // write post-action user code here
-} else if (command == exitProfileCommand) {//GEN-LINE:|7-commandAction|15|17-preAction
+} else if (command == exitProfileCommand) {//GEN-LINE:|7-commandAction|17|17-preAction
  // write pre-action user code here
-exitMIDlet ();//GEN-LINE:|7-commandAction|16|17-postAction
+exitMIDlet ();//GEN-LINE:|7-commandAction|18|17-postAction
  // write post-action user code here
-} else if (command == saveCommand) {//GEN-LINE:|7-commandAction|17|19-preAction
+} else if (command == saveCommand) {//GEN-LINE:|7-commandAction|19|19-preAction
 Address address = new Address(getTxtFStreet().getString(), getTxtFNumber().getString(),
         Integer.parseInt(getTxtFZipCode().getString()), getTxtFTown().getString(),
         getTxtFState().getString());
@@ -214,30 +222,30 @@ if (ProfileManager.saveProfile(client))
     getDisplay().setCurrent(getSuccess(), getProfile());
 else
     getDisplay().setCurrent(getError(), getProfile());
-//GEN-LINE:|7-commandAction|18|19-postAction
+//GEN-LINE:|7-commandAction|20|19-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|19|64-preAction
+}//GEN-BEGIN:|7-commandAction|21|64-preAction
 } else if (displayable == subtractElement) {
-if (command == cancelSubtractCommand) {//GEN-END:|7-commandAction|19|64-preAction
+if (command == cancelSubtractCommand) {//GEN-END:|7-commandAction|21|64-preAction
  // write pre-action user code here
-switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|20|64-postAction
+switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|22|64-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|21|44-preAction
+}//GEN-BEGIN:|7-commandAction|23|44-preAction
 } else if (displayable == success) {
-if (command == exitPSCommand) {//GEN-END:|7-commandAction|21|44-preAction
+if (command == exitPSCommand) {//GEN-END:|7-commandAction|23|44-preAction
  // write pre-action user code here
-switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|22|44-postAction
+switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|24|44-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|23|7-postCommandAction
-}//GEN-END:|7-commandAction|23|7-postCommandAction
+}//GEN-BEGIN:|7-commandAction|25|7-postCommandAction
+}//GEN-END:|7-commandAction|25|7-postCommandAction
 else if (command == exit) {
     exitMIDlet();
 }
 else if (command == cancel) {
     exitMIDlet();
 }
-}//GEN-BEGIN:|7-commandAction|24|
-//</editor-fold>//GEN-END:|7-commandAction|24|
+}//GEN-BEGIN:|7-commandAction|26|
+//</editor-fold>//GEN-END:|7-commandAction|26|
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: profile ">//GEN-BEGIN:|14-getter|0|14-preInit
 /**
@@ -854,6 +862,38 @@ return exitOpeningCommand;
 }
 //</editor-fold>//GEN-END:|89-getter|2|
 
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: bill ">//GEN-BEGIN:|94-getter|0|94-preInit
+/**
+ * Returns an initiliazed instance of bill component.
+ * @return the initialized component instance
+ */
+public Form getBill () {
+if (bill == null) {//GEN-END:|94-getter|0|94-preInit
+ // write pre-init user code here
+bill = new Form ("Factura:");//GEN-BEGIN:|94-getter|1|94-postInit
+bill.addCommand (getExitBillCommand ());
+bill.setCommandListener (this);//GEN-END:|94-getter|1|94-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|94-getter|2|
+return bill;
+}
+//</editor-fold>//GEN-END:|94-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitBillCommand ">//GEN-BEGIN:|95-getter|0|95-preInit
+/**
+ * Returns an initiliazed instance of exitBillCommand component.
+ * @return the initialized component instance
+ */
+public Command getExitBillCommand () {
+if (exitBillCommand == null) {//GEN-END:|95-getter|0|95-preInit
+ // write pre-init user code here
+exitBillCommand = new Command ("Exit", Command.EXIT, 0);//GEN-LINE:|95-getter|1|95-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|95-getter|2|
+return exitBillCommand;
+}
+//</editor-fold>//GEN-END:|95-getter|2|
+
     /* Metodo para registrar el Listener NFC y capturar sus errores */
     public void addNFCListener(){
         try {
@@ -1033,7 +1073,7 @@ return exitOpeningCommand;
     }
     
     private void sendOrder(String bar) {
-        if (ProductsListManager.sendOrder(bar, this))
+        if (ProductsListManager.sendOrder(bar, 1, this))
             connecting("Enviando pedido");
         else {
             this.showAlert("Pedido no enviado", "Se produjo un error en el envío del pedido", AlertType.ERROR);
