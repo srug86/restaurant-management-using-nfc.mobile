@@ -77,8 +77,8 @@ private Command exitCommand;
 private Command backCommand;
 private Command exitBillCommand;
 private Command exitOpeningCommand;
-private Command recommendationCommand;
 private Command backCommand1;
+private Command recommendationCommand;
 private Font font;
 private Image image;
 //</editor-fold>//GEN-END:|fields|0|
@@ -201,7 +201,7 @@ if (command == exitOLCommand) {//GEN-END:|7-commandAction|11|22-preAction
 exitMIDlet ();//GEN-LINE:|7-commandAction|12|22-postAction
  // write post-action user code here
 } else if (command == recommendationCommand) {//GEN-LINE:|7-commandAction|13|99-preAction
- // write pre-action user code here
+
 switchDisplayable (null, getRecommendations ());//GEN-LINE:|7-commandAction|14|99-postAction
  // write post-action user code here
 } else if (command == sendCommand) {//GEN-LINE:|7-commandAction|15|24-preAction
@@ -1094,6 +1094,7 @@ return backCommand1;
     }
     
     private void newOrder(String product) {
+        RecommendationManager.loadRecommendation(this);
         getDisplay().setCurrent(getOrdersList());
         ProductsListManager.addProduct(product);
         getOrdersList().append(new StringItem(product, String.valueOf(1)));
@@ -1136,13 +1137,8 @@ return backCommand1;
     private void sendOrder(String bar) {
         if (ProductsListManager.sendOrder(bar, 1, this))
             connecting("Enviando pedido");
-        else {
+        else
             this.showAlert("Pedido no enviado", "Se produjo un error en el envío del pedido", AlertType.ERROR);
-            /*
-            Alert alert1 = new Alert("Pedido no enviado", "Se produjo un error en el envío del pedido", null, AlertType.ERROR);
-            Display.getDisplay(this).setCurrent(alert1, getOrdersList());
-             * */
-        }
     }
     
     private void connecting(String msg) {

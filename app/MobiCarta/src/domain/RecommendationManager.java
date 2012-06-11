@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
+import javax.microedition.lcdui.StringItem;
 import org.kxml2.io.KXmlParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -27,6 +28,50 @@ public class RecommendationManager {
         FileIO.createFile(path, xml);
         xmlRecommendationDecoder(path);
         mbc.getSItemOpening().setText(recommendation.getOpening());
+    }
+    
+    public static void loadRecommendation(MobiCarta mbc) {
+        xmlRecommendationDecoder(path);
+        composeRecommendation(mbc);
+    }
+    
+    private static void composeRecommendation(MobiCarta mbc) {
+        if (recommendation.getPromotional().isEmpty() && recommendation.getRecommended().isEmpty() &&
+                recommendation.getUsually().isEmpty())
+            mbc.getRecommendations().append(new StringItem("", "No hay ninguna recomendación para usted."));
+        else {
+            if (!recommendation.getUsually().isEmpty()) {
+                StringItem si = new StringItem("", "Productos más consumidos");
+                si.setFont(mbc.getFont());
+                mbc.getRecommendations().append(si);
+                for (int i = 0; i < recommendation.getUsually().size(); i++) {
+                    RecProduct rp = (RecProduct)recommendation.getUsually().elementAt(i);
+                    mbc.getRecommendations().append(new StringItem(rp.getName() + " (" + 
+                            rp.getCategory() + ")", String.valueOf(rp.getTimes() + " veces")));
+                }
+            }
+            if (!recommendation.getPromotional().isEmpty()) {
+                StringItem si = new StringItem("", "Productos con descuento");
+                si.setFont(mbc.getFont());
+                mbc.getRecommendations().append(si);
+                for (int i = 0; i < recommendation.getPromotional().size(); i++) {
+                    RecProduct rp = (RecProduct)recommendation.getPromotional().elementAt(i);
+                    mbc.getRecommendations().append(new StringItem(rp.getName(),
+                            String.valueOf(String.valueOf(rp.getDiscount() * 100) + "% de desc. en la " + 
+                            String.valueOf(rp.getDiscountedUnit()) + "ª unidad.")));
+                }
+            }
+            if (!recommendation.getRecommended().isEmpty()) {
+                StringItem si = new StringItem("", "Productos recomendados");
+                si.setFont(mbc.getFont());
+                mbc.getRecommendations().append(si);
+                for (int i = 0; i < recommendation.getRecommended().size(); i++) {
+                    RecProduct rp = (RecProduct)recommendation.getRecommended().elementAt(i);
+                    mbc.getRecommendations().append(new StringItem(rp.getName(), "(" +
+                            rp.getCategory() + ")"));
+                }
+            }
+        }
     }
     
     private static void xmlRecommendationDecoder(String file) {
