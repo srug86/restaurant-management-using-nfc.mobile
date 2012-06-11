@@ -22,14 +22,15 @@ import presentation.MobiCarta;
  * @author Sergio
  */
 public class BillManager {
-    public static Bill bill = new Bill();
+    //public static Bill bill = new Bill();
     
     public static void catchBill(String xml, MobiCarta mbc) {
-        xmlBillDecoder(xml);
-        composeBill(mbc);
+        Bill bill = xmlBillDecoder(mbc, xml);
+        //composeBill(bill, mbc, xml);
+        composeBill(new Bill(), mbc, xml);
     }
     
-    private static void composeBill(MobiCarta mbc) {
+    private static void composeBill(Bill bill, MobiCarta mbc, String xml) {
         StringItem si = new StringItem("Restaurante", bill.getRestaurant());
         si.setFont(mbc.getFont());
         mbc.getBill().append(si);
@@ -52,12 +53,15 @@ public class BillManager {
         si = new StringItem("Total:", String.valueOf(bill.getTotal()) + " €");
         si.setFont(mbc.getFont());
         mbc.getBill().append(si);
+        mbc.getBill().append(xml);
     }
     
-    private static void xmlBillDecoder(String xml) {
+    private static Bill xmlBillDecoder(MobiCarta mbc, String xml) {
+        Bill bill = new Bill();
+        Vector orders = new Vector();
         KXmlParser parser = new KXmlParser();
-        try {
-            InputStream ist = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+        try {            
+            InputStream ist = new ByteArrayInputStream(xml.getBytes("ASCII"));
             InputStreamReader is = new InputStreamReader(ist);
             parser.setInput(is);
             parser.nextTag();
@@ -65,20 +69,36 @@ public class BillManager {
             while (parser.next() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG) {
                     if (parser.getName().equals("Company"))
-                        bill.setRestaurant(parser.getAttributeValue(0));
+                        bill.setRestaurant(parser.nextText());
                     else if (parser.getName().equals("Date"))
                         bill.setDate(parser.nextText());
                     else if (parser.getName().equals("Table"))
                         bill.setTable(Integer.parseInt(parser.nextText()));
-                    else if (parser.getName().equals("Orders")) {
+                    /*else if (parser.getName().equals("Order")) {
                         BillItem bi = new BillItem();
-                        Vector orders = new Vector();
+                        bi.setProduct(parser.getAttributeValue(0));
+                        bi.setAmount(Integer.parseInt(parser.getAttributeValue(1)));
+                        bi.setPrice(Double.parseDouble(parser.getAttributeValue(2)));
+                        bi.setDiscount(Double.parseDouble(parser.getAttributeValue(3)));
+                        bi.setTotal(Double.parseDouble(parser.getAttributeValue(4)));
+                        orders.addElement(bi);
+                    }
+                    else if (parser.getName().equals("PriceSummary")) {
+                        bill.setSubtotal(Double.parseDouble(parser.getAttributeValue(0)));
+                        bill.setDiscount(Double.parseDouble(parser.getAttributeValue(1)));
+                        bill.setTaxBase(Double.parseDouble(parser.getAttributeValue(2)));
+                        bill.setIva(Double.parseDouble(parser.getAttributeValue(3)));
+                        bill.setQuote(Double.parseDouble(parser.getAttributeValue(4)));
+                        bill.setTotal(Double.parseDouble(parser.getAttributeValue(5)));
+                    }*/
+                    /*else if (parser.getName().equals("Orders")) {
+                        BillItem bi = new BillItem();
                         while (parser.next() != XmlPullParser.END_DOCUMENT) {
                             if (parser.getEventType() == XmlPullParser.START_TAG) {
                                 if (parser.getName().equals("Order")) {
                                     bi = new BillItem();
                                     orders.addElement(bi);
-                                    bi.setId(Integer.parseInt(parser.getAttributeValue(0)));
+                                    //bi.setId(Integer.parseInt(parser.getAttributeValue(0)));
                                 }
                                 else if (parser.getName().equals("Product"))
                                     bi.setProduct(parser.nextText());
@@ -94,7 +114,7 @@ public class BillManager {
                             }
                         }
                         bill.setOrders(orders);
-                    }
+                    }*/
                     else if (parser.getName().equals("Subtotal"))
                         bill.setSubtotal(Double.parseDouble(parser.nextText()));
                     else if (parser.getName().equals("Discount"))
@@ -109,9 +129,16 @@ public class BillManager {
                         bill.setTotal(Double.parseDouble(parser.nextText()));
                 }
             }
+            is.close();
+            ist.close();
+            //bill.setOrders(orders);
         } catch (XmlPullParserException ex) {
+             mbc.showAlert("1", "1", AlertType.ERROR);
         } catch (UnsupportedEncodingException ex) {
+             mbc.showAlert("2", "2", AlertType.ERROR);
         } catch (IOException ex) {
+             mbc.showAlert("3", "3", AlertType.ERROR);
         }
+        return bill;
     }
 }

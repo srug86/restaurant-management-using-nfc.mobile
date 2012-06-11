@@ -123,7 +123,7 @@ public class BluetoothClient implements DiscoveryListener {
                 out.writeUTF(data);
                 out.flush();
                 int rd = 0;
-                while( (rd = in.read(reply)) <= 0);
+                while ((rd = in.read(reply)) <= 0);
             } catch (IOException e) {
                 mbc.showAlert("Error de entrada/salida", e.toString(), AlertType.ERROR);
             } finally {
@@ -145,9 +145,10 @@ public class BluetoothClient implements DiscoveryListener {
                             break;
                         case 2:
                             BillManager.catchBill(msg, mbc);
-                            mbc.getDisplay().setCurrent(mbc.getBill());
+                            mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getBill());
                             break;
                         default:
+                            mbc.showAlert("Operación no válida", "La operación no se pudo completar", AlertType.ERROR);
                             break;
                     }
                 } catch (IOException e) {
