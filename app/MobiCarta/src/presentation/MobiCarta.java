@@ -57,10 +57,11 @@ private ImageItem imageItem;
 private StringItem stringItem3;
 private Alert subtractElement;
 private Alert checkpoint;
+private Form bill;
 private Form Opening;
 private StringItem sItemOpening;
 private ImageItem imageItem1;
-private Form bill;
+private Form recommendations;
 private Command exitProfileCommand;
 private Command saveCommand;
 private Command exitOLCommand;
@@ -74,8 +75,10 @@ private Command cancelSubtractCommand;
 private Command ProfileCommand;
 private Command exitCommand;
 private Command backCommand;
-private Command exitOpeningCommand;
 private Command exitBillCommand;
+private Command exitOpeningCommand;
+private Command recommendationCommand;
+private Command backCommand1;
 private Font font;
 private Image image;
 //</editor-fold>//GEN-END:|fields|0|
@@ -197,21 +200,25 @@ if (command == exitOLCommand) {//GEN-END:|7-commandAction|11|22-preAction
  // write pre-action user code here
 exitMIDlet ();//GEN-LINE:|7-commandAction|12|22-postAction
  // write post-action user code here
-} else if (command == sendCommand) {//GEN-LINE:|7-commandAction|13|24-preAction
+} else if (command == recommendationCommand) {//GEN-LINE:|7-commandAction|13|99-preAction
+ // write pre-action user code here
+switchDisplayable (null, getRecommendations ());//GEN-LINE:|7-commandAction|14|99-postAction
+ // write post-action user code here
+} else if (command == sendCommand) {//GEN-LINE:|7-commandAction|15|24-preAction
 sendOrder("");
-//GEN-LINE:|7-commandAction|14|24-postAction
+//GEN-LINE:|7-commandAction|16|24-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|15|81-preAction
+}//GEN-BEGIN:|7-commandAction|17|81-preAction
 } else if (displayable == profile) {
-if (command == backCommand) {//GEN-END:|7-commandAction|15|81-preAction
+if (command == backCommand) {//GEN-END:|7-commandAction|17|81-preAction
  // write pre-action user code here
-switchDisplayable (null, getMain ());//GEN-LINE:|7-commandAction|16|81-postAction
+switchDisplayable (null, getMain ());//GEN-LINE:|7-commandAction|18|81-postAction
  // write post-action user code here
-} else if (command == exitProfileCommand) {//GEN-LINE:|7-commandAction|17|17-preAction
+} else if (command == exitProfileCommand) {//GEN-LINE:|7-commandAction|19|17-preAction
  // write pre-action user code here
-exitMIDlet ();//GEN-LINE:|7-commandAction|18|17-postAction
+exitMIDlet ();//GEN-LINE:|7-commandAction|20|17-postAction
  // write post-action user code here
-} else if (command == saveCommand) {//GEN-LINE:|7-commandAction|19|19-preAction
+} else if (command == saveCommand) {//GEN-LINE:|7-commandAction|21|19-preAction
 Address address = new Address(getTxtFStreet().getString(), getTxtFNumber().getString(),
         Integer.parseInt(getTxtFZipCode().getString()), getTxtFTown().getString(),
         getTxtFState().getString());
@@ -222,30 +229,36 @@ if (ProfileManager.saveProfile(client))
     getDisplay().setCurrent(getSuccess(), getProfile());
 else
     getDisplay().setCurrent(getError(), getProfile());
-//GEN-LINE:|7-commandAction|20|19-postAction
+//GEN-LINE:|7-commandAction|22|19-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|21|64-preAction
+}//GEN-BEGIN:|7-commandAction|23|103-preAction
+} else if (displayable == recommendations) {
+if (command == backCommand1) {//GEN-END:|7-commandAction|23|103-preAction
+ // write pre-action user code here
+switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|24|103-postAction
+ // write post-action user code here
+}//GEN-BEGIN:|7-commandAction|25|64-preAction
 } else if (displayable == subtractElement) {
-if (command == cancelSubtractCommand) {//GEN-END:|7-commandAction|21|64-preAction
+if (command == cancelSubtractCommand) {//GEN-END:|7-commandAction|25|64-preAction
  // write pre-action user code here
-switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|22|64-postAction
+switchDisplayable (null, getOrdersList ());//GEN-LINE:|7-commandAction|26|64-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|23|44-preAction
+}//GEN-BEGIN:|7-commandAction|27|44-preAction
 } else if (displayable == success) {
-if (command == exitPSCommand) {//GEN-END:|7-commandAction|23|44-preAction
+if (command == exitPSCommand) {//GEN-END:|7-commandAction|27|44-preAction
  // write pre-action user code here
-switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|24|44-postAction
+switchDisplayable (null, getProfile ());//GEN-LINE:|7-commandAction|28|44-postAction
  // write post-action user code here
-}//GEN-BEGIN:|7-commandAction|25|7-postCommandAction
-}//GEN-END:|7-commandAction|25|7-postCommandAction
+}//GEN-BEGIN:|7-commandAction|29|7-postCommandAction
+}//GEN-END:|7-commandAction|29|7-postCommandAction
 else if (command == exit) {
     exitMIDlet();
 }
 else if (command == cancel) {
     exitMIDlet();
 }
-}//GEN-BEGIN:|7-commandAction|26|
-//</editor-fold>//GEN-END:|7-commandAction|26|
+}//GEN-BEGIN:|7-commandAction|30|
+//</editor-fold>//GEN-END:|7-commandAction|30|
 
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: profile ">//GEN-BEGIN:|14-getter|0|14-preInit
 /**
@@ -277,6 +290,7 @@ if (ordersList == null) {//GEN-END:|15-getter|0|15-preInit
 ordersList = new Form ("Lista de productos:");//GEN-BEGIN:|15-getter|1|15-postInit
 ordersList.addCommand (getExitOLCommand ());
 ordersList.addCommand (getSendCommand ());
+ordersList.addCommand (getRecommendationCommand ());
 ordersList.setCommandListener (this);//GEN-END:|15-getter|1|15-postInit
  // write post-init user code here
 }//GEN-BEGIN:|15-getter|2|
@@ -893,6 +907,53 @@ exitBillCommand = new Command ("Exit", Command.EXIT, 0);//GEN-LINE:|95-getter|1|
 return exitBillCommand;
 }
 //</editor-fold>//GEN-END:|95-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: recommendations ">//GEN-BEGIN:|100-getter|0|100-preInit
+/**
+ * Returns an initiliazed instance of recommendations component.
+ * @return the initialized component instance
+ */
+public Form getRecommendations () {
+if (recommendations == null) {//GEN-END:|100-getter|0|100-preInit
+ // write pre-init user code here
+recommendations = new Form ("Recomendaciones:");//GEN-BEGIN:|100-getter|1|100-postInit
+recommendations.addCommand (getBackCommand1 ());
+recommendations.setCommandListener (this);//GEN-END:|100-getter|1|100-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|100-getter|2|
+return recommendations;
+}
+//</editor-fold>//GEN-END:|100-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: recommendationCommand ">//GEN-BEGIN:|98-getter|0|98-preInit
+/**
+ * Returns an initiliazed instance of recommendationCommand component.
+ * @return the initialized component instance
+ */
+public Command getRecommendationCommand () {
+if (recommendationCommand == null) {//GEN-END:|98-getter|0|98-preInit
+ // write pre-init user code here
+recommendationCommand = new Command ("Recomendaciones", Command.ITEM, 0);//GEN-LINE:|98-getter|1|98-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|98-getter|2|
+return recommendationCommand;
+}
+//</editor-fold>//GEN-END:|98-getter|2|
+
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: backCommand1 ">//GEN-BEGIN:|102-getter|0|102-preInit
+/**
+ * Returns an initiliazed instance of backCommand1 component.
+ * @return the initialized component instance
+ */
+public Command getBackCommand1 () {
+if (backCommand1 == null) {//GEN-END:|102-getter|0|102-preInit
+ // write pre-init user code here
+backCommand1 = new Command ("Back", Command.BACK, 0);//GEN-LINE:|102-getter|1|102-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|102-getter|2|
+return backCommand1;
+}
+//</editor-fold>//GEN-END:|102-getter|2|
 
     /* Metodo para registrar el Listener NFC y capturar sus errores */
     public void addNFCListener(){
