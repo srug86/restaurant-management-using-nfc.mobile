@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Recommendations>
+	<Opening>Bienvenido al restaurante "MobiCarta"
+Gracias por utilizar el servicio NFC.
+Es su visita numero 10.
+</Opening>
+	<Products>
+		<Usually>
+			<UCategory name="Pescados y mariscos">
+				<UProduct>Sepia a la plancha</UProduct>
+				<UTimes>2</UTimes>
+			</UCategory>
+			<UCategory name="Arroces y pastas">
+				<UProduct>Macarrones con tomate</UProduct>
+				<UTimes>2</UTimes>
+			</UCategory>
+		</Usually>
+		<Promotional>
+			<PProduct name="Macarrones con tomate">
+				<PDiscount>0.5</PDiscount>
+				<PUnits>2</PUnits>
+			</PProduct>
+			<PProduct name="Entrecotte a la pimienta">
+				<PDiscount>0.5</PDiscount>
+				<PUnits>2</PUnits>
+			</PProduct>
+		</Promotional>
+		<Recommended>
+			<RProduct name="Lenguado a la plancha">
+				<RCategory>Pescados y mariscos</RCategory>
+			</RProduct>
+			<RProduct name="Fideua blanca">
+				<RCategory>Arroces y pastas</RCategory>
+			</RProduct>
+		</Recommended>
+	</Products>
+</Recommendations>

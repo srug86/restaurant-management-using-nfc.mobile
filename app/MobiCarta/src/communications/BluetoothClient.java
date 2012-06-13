@@ -81,7 +81,6 @@ public class BluetoothClient implements DiscoveryListener {
     
     private void finishSearches() {
         discoveryAgent.cancelInquiry(this);
-        //discoveryAgent.cancelServiceSearch(service);
         Enumeration en = searches.elements();
         Integer i;
         while (en.hasMoreElements()) {
@@ -105,7 +104,6 @@ public class BluetoothClient implements DiscoveryListener {
         try {
             int transId = discoveryAgent.searchServices(ATRIBUTES, SERVICES, rd, this);
             searches.addElement(new Integer(transId));
-            //service = discoveryAgent.searchServices(ATRIBUTES, SERVICES, rd, this);
         } catch(BluetoothStateException e) {
             mbc.showAlert("Error en la conexión Bluetooth", e.getMessage(), AlertType.ERROR);
         }
@@ -114,63 +112,51 @@ public class BluetoothClient implements DiscoveryListener {
     public void servicesDiscovered(int transId, ServiceRecord[] srs) {
         ServiceRecord service = null;
         for (int i = 0; i < srs.length; i++) {
-            //if (transId == this.service) {
-                service = srs[i];
-                String url = service.getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
-                StreamConnection connection = null;
-                DataInputStream in = null;
-                DataOutputStream out = null;
-                //byte[] reply = new byte[5120];
-                byte[] reply = new byte[10240];
+            service = srs[i];
+            String url = service.getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
+            StreamConnection connection = null;
+            DataInputStream in = null;
+            DataOutputStream out = null;
+            byte[] reply = new byte[20480];
+            try {
+                connection = (StreamConnection)Connector.open(url);
+                out = connection.openDataOutputStream();
+                in = connection.openDataInputStream();
+                out.writeUTF(data);
+                out.flush();
+                int rd = 0;
+                while ((rd = in.read(reply)) <= 0);
+            } catch (IOException e) {
+                mbc.showAlert("Error de entrada/salida", e.toString(), AlertType.ERROR);
+            } finally {
                 try {
-                    connection = (StreamConnection)Connector.open(url);
-                    out = connection.openDataOutputStream();
-                    in = connection.openDataInputStream();
-                    //mbc.getDisplay().getCurrent().setTicker(new Ticker("escribiendo..."));
-                    out.writeUTF(data);
-                    out.flush();
-                    int rd = 0;
-                    //mbc.getDisplay().getCurrent().setTicker(new Ticker("leyendo..."));
-                    while ((rd = in.read(reply)) <= 0);
-                } catch (IOException e) {
-                    mbc.showAlert("Error de entrada/salida", e.toString(), AlertType.ERROR);
-                } finally {
-                    try {
-                        //mbc.getDisplay().getCurrent().setTicker(new Ticker("cerrando entradas/salidas..."));
-                        if (in != null) in.close();
-                        if (out != null) out.close();
-                        //mbc.getDisplay().getCurrent().setTicker(new Ticker("cerrando conexión..."));
-                        if (connection != null) { connection.close(); connection = null; }
-                        String msg = new String(reply, "ASCII");
-                        switch (rcv) {
-                            case 0:
-                                //mbc.getDisplay().getCurrent().setTicker(new Ticker("extrayendo recomendaciones..."));
-                                RecommendationManager.catchRecommendation(msg, mbc);
-                                //mbc.getDisplay().getCurrent().setTicker(new Ticker("mostrando resultados..."));
-                                mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
-                                break;
-                            case 1:
-                                if (msg.substring(0, 5).equals("ERROR"))
-                                    mbc.showAlert("Solicitud de pedidos", msg, AlertType.ERROR);
-                                else mbc.showAlert("Solicitud de pedidos", msg, AlertType.CONFIRMATION);
-                                break;
-                            case 2:
-                                //mbc.getDisplay().getCurrent().setTicker(new Ticker("extrayendo elementos de la factura..."));
-                                BillManager.catchBill(msg, mbc);
-                                //mbc.getDisplay().getCurrent().setTicker(new Ticker("mostrando resultados..."));
-                                mbc.getDisplay().setCurrent(mbc.getBill());
-                                break;
-                            default:
-                                mbc.showAlert("Operación no válida", "La operación no se pudo completar", AlertType.ERROR);
-                                break;
-                        }
-                        //mbc.getDisplay().getCurrent().setTicker(new Ticker("finalizando servicios..."));
-                        finishSearches();
-                    } catch (IOException e) {
-                        mbc.showAlert("Error de entrada/salida", e.getMessage(), AlertType.ERROR);
+                    if (in != null) in.close();
+                    if (out != null) out.close();
+                    if (connection != null) { connection.close(); connection = null; }
+                    String msg = new String(reply, "ASCII");
+                    switch (rcv) {
+                        case 0:
+                            RecommendationManager.catchRecommendation(msg, mbc);
+                            mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
+                            break;
+                        case 1:
+                            if (msg.substring(0, 5).equals("ERROR"))
+                                mbc.showAlert("Solicitud de pedidos", msg, AlertType.ERROR);
+                            else mbc.showAlert("Solicitud de pedidos", msg, AlertType.CONFIRMATION);
+                            break;
+                        case 2:
+                            BillManager.catchBill(msg, mbc);
+                            mbc.getDisplay().setCurrent(mbc.getBill());
+                            break;
+                        default:
+                            mbc.showAlert("Operación no válida", "La operación no se pudo completar", AlertType.ERROR);
+                            break;
                     }
+                    finishSearches();
+                } catch (IOException e) {
+                    mbc.showAlert("Error de entrada/salida", e.getMessage(), AlertType.ERROR);
                 }
-            //}
+            }
         }
     }
 

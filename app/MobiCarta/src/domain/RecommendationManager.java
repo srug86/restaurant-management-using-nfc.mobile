@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
+import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.StringItem;
 import org.kxml2.io.KXmlParser;
 import org.xmlpull.v1.XmlPullParser;
@@ -26,12 +27,12 @@ public class RecommendationManager {
     
     public static void catchRecommendation(String xml, MobiCarta mbc) {
         FileIO.createFile(path, xml);
-        xmlRecommendationDecoder(path);
+        xmlRecommendationDecoder(path, mbc);
         mbc.getSItemOpening().setText(recommendation.getOpening());
     }
     
     public static void loadRecommendation(MobiCarta mbc) {
-        xmlRecommendationDecoder(path);
+        xmlRecommendationDecoder(path, mbc);
         composeRecommendation(mbc);
     }
     
@@ -74,72 +75,60 @@ public class RecommendationManager {
         }
     }
     
-    private static void xmlRecommendationDecoder(String file) {
+    private static void xmlRecommendationDecoder(String file, MobiCarta mbc) {
         KXmlParser parser = new KXmlParser();
+        Vector usually = new Vector();
+        Vector promotional = new Vector();
+        Vector recommended = new Vector();
+        recommendation.setUsually(usually);
+        recommendation.setPromotional(promotional);
+        recommendation.setRecommended(recommended);
+        RecProduct product = new RecProduct();
         try {
             FileConnection fileCon = (FileConnection)Connector.open(file, Connector.READ);
-            InputStreamReader is = new InputStreamReader(fileCon.openInputStream());
-            parser.setInput(is);
-            parser.nextTag();
-            parser.require(XmlPullParser.START_TAG, null, "Recommendations");
-            while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                if (parser.getEventType() == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals("Opening"))
-                        recommendation.setOpening(parser.nextText());
-                    else if (parser.getName().equals("Usually")) {
-                        RecProduct product = new RecProduct();
-                        Vector usually = new Vector();
-                        while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                            if (parser.getEventType() == XmlPullParser.START_TAG) {
-                                if (parser.getName().equals("Category")) {
-                                    product = new RecProduct();
-                                    usually.addElement(product);
-                                    product.setCategory(parser.getAttributeValue(0));
-                                }
-                                else if (parser.getName().equals("Product"))
-                                    product.setName(parser.nextText());
-                                else if (parser.getName().equals("Times"))
-                                    product.setTimes(Integer.parseInt(parser.nextText()));
-                                else break;
-                            }
+            if (fileCon.exists()) {
+                InputStreamReader is = new InputStreamReader(fileCon.openInputStream());
+                parser.setInput(is);
+                parser.nextTag();
+                parser.require(XmlPullParser.START_TAG, null, "Recommendations");
+                while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                    if (parser.getEventType() == XmlPullParser.START_TAG) {
+                        if (parser.getName().equals("Opening"))
+                            recommendation.setOpening(parser.nextText());
+                        else if (parser.getName().equals("UCategory")) {
+                            product = new RecProduct();
+                            usually.addElement(product);
+                            product.setCategory(parser.getAttributeValue(0));
                         }
-                        recommendation.setUsually(usually);
-                        Vector promotional = new Vector();
-                        while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                            if (parser.getEventType() == XmlPullParser.START_TAG) {
-                                if (parser.getName().equals("Product")) {
-                                    product = new RecProduct();
-                                    promotional.addElement(product);
-                                    product.setName(parser.getAttributeValue(0));
-                                }
-                                else if (parser.getName().equals("Discount"))
-                                    product.setDiscount(Double.parseDouble(parser.nextText()));
-                                else if (parser.getName().equals("Units"))
-                                    product.setDiscountedUnit(Integer.parseInt(parser.nextText()));
-                                else break;
-                            }
+                        else if (parser.getName().equals("UProduct"))
+                            product.setName(parser.nextText());
+                        else if (parser.getName().equals("UTimes"))
+                            product.setTimes(Integer.parseInt(parser.nextText()));
+                        else if (parser.getName().equals("PProduct")) {
+                            product = new RecProduct();
+                            promotional.addElement(product);
+                            product.setName(parser.getAttributeValue(0));
                         }
-                        recommendation.setPromotional(promotional);
-                        Vector recommended = new Vector();
-                        while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                            if (parser.getEventType() == XmlPullParser.START_TAG) {
-                                if (parser.getName().equals("Product")) {
-                                    product = new RecProduct();
-                                    recommended.addElement(product);
-                                    product.setName(parser.getAttributeValue(0));
-                                    product.setCategory(parser.getAttributeValue(1));
-                                }
-                                else break;
-                            }
+                        else if (parser.getName().equals("PDiscount"))
+                            product.setDiscount(Double.parseDouble(parser.nextText()));
+                        else if (parser.getName().equals("PUnits"))
+                            product.setDiscountedUnit(Integer.parseInt(parser.nextText()));
+                        else if (parser.getName().equals("RProduct")) {
+                            product = new RecProduct();
+                            recommended.addElement(product);
+                            product.setName(parser.getAttributeValue(0));
                         }
-                        recommendation.setRecommended(recommended);
+                        else if (parser.getName().equals("RCategory"))
+                            product.setCategory(parser.nextText());
                     }
                 }
+                is.close();
             }
+            fileCon.close();
         } catch (XmlPullParserException ex) {
-            ex.printStackTrace();
+            mbc.showAlert("Error al analizar mensaje", ex.toString(), AlertType.ERROR);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            mbc.showAlert("Error de entrada/salida", ex.toString(), AlertType.ERROR);
         }
     }
 }

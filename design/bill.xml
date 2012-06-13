@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><Bill>
+	<Company>MobiCarta</Company>
+	<Date>13/06/2012 0:00:00</Date>
+	<Table>10</Table>
+	<Orders>
+		<Order product="Macarrones con tomate">
+			<Amount>2</Amount>
+			<Price>10</Price>
+			<PDiscount>5</PDiscount>
+			<PTotal>-80</PTotal>
+		</Order>
+		<Order product="Solicitud de facturacion">
+			<Amount>0</Amount>
+			<Price>0</Price>
+			<PDiscount>0</PDiscount>
+			<PTotal>0</PTotal>
+		</Order>
+	</Orders>
+	<PriceSummary>
+		<Subtotal>-80</Subtotal>
+		<BDiscount>0</BDiscount>
+		<TaxBase>-80</TaxBase>
+		<IVA>18</IVA>
+		<Quote>-14.4</Quote>
+		<BTotal>-94.4</BTotal>
+	</PriceSummary>
+</Bill>

@@ -351,7 +351,7 @@ return exitOLCommand;
 public Command getSendCommand () {
 if (sendCommand == null) {//GEN-END:|23-getter|0|23-preInit
  // write pre-init user code here
-sendCommand = new Command ("Enviar", Command.OK, 0);//GEN-LINE:|23-getter|1|23-postInit
+sendCommand = new Command ("Enviar", Command.OK, 2);//GEN-LINE:|23-getter|1|23-postInit
  // write post-init user code here
 }//GEN-BEGIN:|23-getter|2|
 return sendCommand;
@@ -933,7 +933,7 @@ return recommendations;
 public Command getRecommendationCommand () {
 if (recommendationCommand == null) {//GEN-END:|98-getter|0|98-preInit
  // write pre-init user code here
-recommendationCommand = new Command ("Recomendaciones", Command.ITEM, 0);//GEN-LINE:|98-getter|1|98-postInit
+recommendationCommand = new Command ("Recomendaciones", Command.ITEM, 1);//GEN-LINE:|98-getter|1|98-postInit
  // write post-init user code here
 }//GEN-BEGIN:|98-getter|2|
 return recommendationCommand;
@@ -948,7 +948,7 @@ return recommendationCommand;
 public Command getBackCommand1 () {
 if (backCommand1 == null) {//GEN-END:|102-getter|0|102-preInit
  // write pre-init user code here
-backCommand1 = new Command ("Back", Command.BACK, 0);//GEN-LINE:|102-getter|1|102-postInit
+backCommand1 = new Command ("Atr\u00E1s", Command.BACK, 0);//GEN-LINE:|102-getter|1|102-postInit
  // write post-init user code here
 }//GEN-BEGIN:|102-getter|2|
 return backCommand1;
@@ -1051,10 +1051,14 @@ return backCommand1;
     private void tagProcessing(NDEFMessage message) {
         String type = message.getRecord(0).getRecordType().getName().toString();
         String content = new String(message.getRecord(0).getPayload());
-        if (type.equals("app/checkpoint"))
+        if (type.equals("app/checkpoint")) {
+            removeNFCListener();
             clientRegister(content);
-        else if (type.equals("app/bill-request"))
+        }
+        else if (type.equals("app/bill-request")) {
+            removeNFCListener();
             billRequest(content);
+        }
         else if (type.equals("app/product")) {
             if (getDisplay().getCurrent() == getOrdersList())
                 addProduct(content);
@@ -1064,8 +1068,10 @@ return backCommand1;
                 newOrder(content);
         }
         else if (type.equals("app/send-order")) {
-            if (getDisplay().getCurrent() == getOrdersList() && ProductsListManager.productsList.size() > 0)
+            if (getDisplay().getCurrent() == getOrdersList() && ProductsListManager.productsList.size() > 0) {
+                removeNFCListener();
                 sendOrder(content);
+            }
         }
         else if (type.equals("app/subtract-product")) {
             if (getDisplay().getCurrent() == getOrdersList() && ProductsListManager.productsList.size() > 0)

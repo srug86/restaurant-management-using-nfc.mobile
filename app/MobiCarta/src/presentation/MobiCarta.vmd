@@ -364,6 +364,7 @@
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
                     <Property name="label" typeID="Pjava.lang.String" value="VEnviar"/>
                     <Property name="type" typeID="Pint" value="V4"/>
+                    <Property name="priority" typeID="Pint" value="V2"/>
                 </Component>
                 <Component componentID="43" typeID="Cjavax.microedition.lcdui.Command">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VexitPSCommand"/>
@@ -434,7 +435,7 @@
                 <Component componentID="102" typeID="Cjavax.microedition.lcdui.Command">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VbackCommand1"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="label" typeID="Pjava.lang.String" value="VBack"/>
+                    <Property name="label" typeID="Pjava.lang.String" value="VAtrás"/>
                     <Property name="type" typeID="Pint" value="V2"/>
                 </Component>
                 <Component componentID="98" typeID="Cjavax.microedition.lcdui.Command">
@@ -442,6 +443,7 @@
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
                     <Property name="label" typeID="Pjava.lang.String" value="VRecomendaciones"/>
                     <Property name="type" typeID="Pint" value="V8"/>
+                    <Property name="priority" typeID="Pint" value="V1"/>
                 </Component>
             </Component>
             <Component componentID="12" typeID="C#ResourcesCategory">
@@ -462,16 +464,16 @@
         </Component>
     </Document>
     <FlowScene version="1">
-        <Node componentID="62" descriptorID="componentNode62" x="500" y="241"/>
-        <Node componentID="100" descriptorID="componentNode100" x="922" y="27"/>
-        <Node componentID="88" descriptorID="componentNode88" x="640" y="384"/>
-        <Node componentID="47" descriptorID="componentNode47" x="248" y="256"/>
-        <Node componentID="26" descriptorID="componentNode26" x="16" y="384"/>
         <Node componentID="27" descriptorID="componentNode27" x="235" y="390"/>
-        <Node componentID="15" descriptorID="componentNode15" x="631" y="26"/>
+        <Node componentID="47" descriptorID="componentNode47" x="248" y="256"/>
         <Node componentID="84" descriptorID="componentNode84" x="416" y="386"/>
-        <Node componentID="94" descriptorID="componentNode94" x="790" y="166"/>
-        <Node componentID="2" descriptorID="componentNode2" x="361" y="10"/>
+        <Node componentID="15" descriptorID="componentNode15" x="631" y="26"/>
         <Node componentID="14" descriptorID="componentNode14" x="118" y="83"/>
+        <Node componentID="94" descriptorID="componentNode94" x="790" y="166"/>
+        <Node componentID="26" descriptorID="componentNode26" x="16" y="384"/>
+        <Node componentID="62" descriptorID="componentNode62" x="500" y="241"/>
+        <Node componentID="2" descriptorID="componentNode2" x="361" y="10"/>
+        <Node componentID="88" descriptorID="componentNode88" x="640" y="384"/>
+        <Node componentID="100" descriptorID="componentNode100" x="922" y="27"/>
     </FlowScene>
 </VisualDesign>
