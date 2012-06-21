@@ -33,6 +33,7 @@ public class MobiCarta extends MIDlet implements CommandListener, NDEFRecordList
     private boolean midletPaused = false;
 
     private Alert alert;
+    private Gauge gauge;
     private Command exit, cancel;
     private Form searching;
     private boolean nfcStart = false;
@@ -81,6 +82,7 @@ private Command backCommand1;
 private Command recommendationCommand;
 private Font font;
 private Image image;
+private Ticker recTicker;
 //</editor-fold>//GEN-END:|fields|0|
     /**
      * The MobiCarta constructor.
@@ -288,6 +290,7 @@ public Form getOrdersList () {
 if (ordersList == null) {//GEN-END:|15-getter|0|15-preInit
  // write pre-init user code here
 ordersList = new Form ("Lista de productos:");//GEN-BEGIN:|15-getter|1|15-postInit
+ordersList.setTicker (getRecTicker ());
 ordersList.addCommand (getExitOLCommand ());
 ordersList.addCommand (getSendCommand ());
 ordersList.addCommand (getRecommendationCommand ());
@@ -781,8 +784,6 @@ return backCommand;
 }
 //</editor-fold>//GEN-END:|80-getter|2|
 
-
-
 //<editor-fold defaultstate="collapsed" desc=" Generated Getter: checkpoint ">//GEN-BEGIN:|84-getter|0|84-preInit
 /**
  * Returns an initiliazed instance of checkpoint component.
@@ -955,6 +956,27 @@ return backCommand1;
 }
 //</editor-fold>//GEN-END:|102-getter|2|
 
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: recTicker ">//GEN-BEGIN:|105-getter|0|105-preInit
+/**
+ * Returns an initiliazed instance of recTicker component.
+ * @return the initialized component instance
+ */
+public Ticker getRecTicker () {
+if (recTicker == null) {//GEN-END:|105-getter|0|105-preInit
+ // write pre-init user code here
+recTicker = new Ticker ("");//GEN-LINE:|105-getter|1|105-postInit
+ // write post-init user code here
+}//GEN-BEGIN:|105-getter|2|
+return recTicker;
+}
+//</editor-fold>//GEN-END:|105-getter|2|
+
+public Gauge getGauge() {
+    if (gauge == null)
+        gauge = new Gauge("Conectando...", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
+    return gauge;
+}
+
     /* Metodo para registrar el Listener NFC y capturar sus errores */
     public void addNFCListener(){
         try {
@@ -1102,14 +1124,14 @@ return backCommand1;
     private void newOrder(String product) {
         RecommendationManager.loadRecommendation(this);
         getDisplay().setCurrent(getOrdersList());
-        ProductsListManager.addProduct(product);
-        getOrdersList().append(new StringItem(product, String.valueOf(1)));
+        String n = ProductsListManager.addProduct(product);
+        getOrdersList().append(new StringItem(product, n));
     }
     
     private void addProduct(String product) {
-        int n = ProductsListManager.addProduct(product);
-        if (n == 1)
-            getOrdersList().append(new StringItem(product, String.valueOf(1)));
+        String n = ProductsListManager.addProduct(product);
+        if (n.substring(0, 2).equals("1 "))
+            getOrdersList().append(new StringItem(product, n));
         else
             for (int i = 0; i < getOrdersList().size(); i++)
                 if (((StringItem)getOrdersList().get(i)).getLabel().toString().equals(product)) {
@@ -1149,7 +1171,8 @@ return backCommand1;
     
     private void connecting(String msg) {
         searching = new Form(msg);
-        searching.append(new Gauge("Conectando...", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+        gauge = new Gauge("Conectando...", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
+        searching.append(gauge);
         cancel = new Command("Cancelar", Command.ITEM, 1);
         searching.addCommand(cancel);
         searching.setCommandListener(this);

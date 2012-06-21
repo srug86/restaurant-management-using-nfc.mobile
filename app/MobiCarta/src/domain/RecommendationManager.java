@@ -36,10 +36,23 @@ public class RecommendationManager {
         composeRecommendation(mbc);
     }
     
+    public static String getPromotion(String product) {
+        String prom = "";
+        for (int i = 0; i < recommendation.getPromotional().size(); i++) {
+            RecProduct rp = ((RecProduct)(recommendation.getPromotional().elementAt(i)));
+            if (rp.getName().equals(product))
+                prom = rp.getDiscount() * 100 + "% desc. " + rp.getDiscountedUnit() + "ª unidad";
+        }
+        return prom;
+    }
+    
     private static void composeRecommendation(MobiCarta mbc) {
         if (recommendation.getPromotional().isEmpty() && recommendation.getRecommended().isEmpty() &&
                 recommendation.getUsually().isEmpty())
+        {
             mbc.getRecommendations().append(new StringItem("", "No hay ninguna recomendación para usted."));
+            mbc.getRecTicker().setString("Todavía no hay recomendaciones para usted.");
+        }
         else {
             if (!recommendation.getUsually().isEmpty()) {
                 StringItem si = new StringItem("", "Productos más consumidos");
@@ -55,21 +68,28 @@ public class RecommendationManager {
                 StringItem si = new StringItem("", "Productos con descuento");
                 si.setFont(mbc.getFont());
                 mbc.getRecommendations().append(si);
+                mbc.getRecTicker().setString("* PROMOCIONES:: ");
                 for (int i = 0; i < recommendation.getPromotional().size(); i++) {
                     RecProduct rp = (RecProduct)recommendation.getPromotional().elementAt(i);
                     mbc.getRecommendations().append(new StringItem(rp.getName(),
                             String.valueOf(String.valueOf(rp.getDiscount() * 100) + "% de desc. en la " + 
                             String.valueOf(rp.getDiscountedUnit()) + "ª unidad.")));
+                    mbc.getRecTicker().setString(mbc.getRecTicker().getString() + rp.getName() + ": " +
+                            String.valueOf(String.valueOf(rp.getDiscount() * 100) + "% desc. la " +
+                            String.valueOf(rp.getDiscountedUnit()) + "ª unidad. / "));
                 }
             }
             if (!recommendation.getRecommended().isEmpty()) {
                 StringItem si = new StringItem("", "Productos recomendados");
                 si.setFont(mbc.getFont());
                 mbc.getRecommendations().append(si);
+                mbc.getRecTicker().setString(mbc.getRecTicker().getString() + "* RECOMENDACIONES:: ");
                 for (int i = 0; i < recommendation.getRecommended().size(); i++) {
                     RecProduct rp = (RecProduct)recommendation.getRecommended().elementAt(i);
                     mbc.getRecommendations().append(new StringItem(rp.getName(), "(" +
                             rp.getCategory() + ")"));
+                    mbc.getRecTicker().setString(mbc.getRecTicker().getString() + rp.getName() + " (" +
+                            rp.getCategory() + "). / ");
                 }
             }
         }

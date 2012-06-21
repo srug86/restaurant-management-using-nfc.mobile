@@ -17,15 +17,18 @@ import presentation.MobiCarta;
 public class ProductsListManager {
     public static Vector productsList = new Vector();
     
-    public static int addProduct(String product) {
+    public static String addProduct(String product) {
+        String prom = "";
+        if (!(prom = RecommendationManager.getPromotion(product)).equals(""))
+            prom = "\t\t(" + prom + ")";
         for (int i = 0; i < productsList.size(); i++)
             if (productsList.elementAt(i).equals(new Order(product, 0))) {
                 ((Order)productsList.elementAt(i)).setAmount(((Order)productsList.
                         elementAt(i)).getAmount() + 1);
-                return ((Order)productsList.elementAt(i)).getAmount();
+                return ((Order)productsList.elementAt(i)).getAmount() + " " + prom;
             }
         productsList.addElement(new Order(product, 1));
-        return 1;
+        return 1 + " " + prom;
     }
     
     public static int removeProduct(String product) {

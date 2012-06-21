@@ -122,22 +122,29 @@ public class BluetoothClient implements DiscoveryListener {
                 connection = (StreamConnection)Connector.open(url);
                 out = connection.openDataOutputStream();
                 in = connection.openDataInputStream();
+                mbc.getGauge().setLabel("Enviando datos...");
                 out.writeUTF(data);
                 out.flush();
                 int rd = 0;
+                mbc.getGauge().setLabel("Recibiendo respuesta...");
                 while ((rd = in.read(reply)) <= 0);
             } catch (IOException e) {
                 mbc.showAlert("Error de entrada/salida", e.toString(), AlertType.ERROR);
             } finally {
                 try {
+                    mbc.getGauge().setLabel("Cerrando conexión...");
                     if (in != null) in.close();
                     if (out != null) out.close();
                     if (connection != null) { connection.close(); connection = null; }
                     String msg = new String(reply, "ASCII");
                     switch (rcv) {
                         case 0:
-                            RecommendationManager.catchRecommendation(msg, mbc);
-                            mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
+                            if (msg.substring(0, 1).equals("<")) {
+                                RecommendationManager.catchRecommendation(msg, mbc);
+                                mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
+                            }
+                            else
+                                mbc.showAlert("Registro de usuarios", msg, AlertType.INFO);
                             break;
                         case 1:
                             if (msg.substring(0, 5).equals("ERROR"))
