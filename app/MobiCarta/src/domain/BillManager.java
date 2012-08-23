@@ -36,7 +36,7 @@ public class BillManager {
         mbc.getBill().append(si);
         mbc.getBill().append(new StringItem("Fecha", bill.getDate()));
         mbc.getBill().append(new StringItem("Mesa", String.valueOf(bill.getTable())));
-        mbc.getBill().append(new StringItem("Pedidos:", "Descrip. / U. Pr(€) Des(%) Imp(€)"));
+        mbc.getBill().append(new StringItem("Pedidos:", "Descrip. / U. Pr(€) Des(€) Imp(€)"));
         Vector orders = bill.getOrders();
         mbc.getDisplay().getCurrent().setTicker(new Ticker("añadiendo los productos..."));
         for (int i = 0; i < orders.size(); i++) {
