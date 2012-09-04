@@ -24,18 +24,20 @@ public class RecommendationManager {
     public static Recommendation recommendation = new Recommendation();
     
     // Directorio donde se guardan las recomendaciones recibidas
-    public static String path = "file:///e:/mobiCarta/recommendations.xml";
+    private static String path = "file:///e:/mobiCarta/";
+    // Nombre del archivo que contiene las recomendaciones
+    private static String recFile = "recommendations.xml";
     
     // Captura la recomendación recibida
     public static void catchRecommendation(String xml, MobiCarta mbc) {
-        FileIO.createFile(path, xml);
-        xmlRecommendationDecoder(path, mbc);
+        FileIO.createFile(path, recFile, xml);
+        xmlRecommendationDecoder(mbc);
         mbc.getSItemOpening().setText(recommendation.getOpening());
     }
     
     // Carga las recomendaciones almacenadas
     public static void loadRecommendation(MobiCarta mbc) {
-        xmlRecommendationDecoder(path, mbc);
+        xmlRecommendationDecoder(mbc);
         composeRecommendation(mbc);
     }
     
@@ -101,7 +103,7 @@ public class RecommendationManager {
     }
     
     // Decodifica el XML de las recomendaciones para el cliente
-    private static void xmlRecommendationDecoder(String file, MobiCarta mbc) {
+    private static void xmlRecommendationDecoder(MobiCarta mbc) {
         KXmlParser parser = new KXmlParser();
         Vector usually = new Vector();
         Vector promotional = new Vector();
@@ -112,7 +114,7 @@ public class RecommendationManager {
         RecProduct product = new RecProduct();
         try {
             // Las recomendaciones se cargan del archivo generado con anterioridad
-            FileConnection fileCon = (FileConnection)Connector.open(file, Connector.READ);
+            FileConnection fileCon = (FileConnection)Connector.open(path + recFile, Connector.READ);
             if (fileCon.exists()) {
                 InputStreamReader is = new InputStreamReader(fileCon.openInputStream());
                 parser.setInput(is);

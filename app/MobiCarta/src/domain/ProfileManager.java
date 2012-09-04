@@ -27,11 +27,13 @@ import org.xmlpull.v1.XmlPullParserException;
 public class ProfileManager {
     
     // Directorio donde se almacena el perfil del cliente
-    public static String path = "file:///e:/mobiCarta/profile.xml";
+    public static String path = "file:///e:/mobiCarta/";
+    // Nombre del archivo que contiene el perfil
+    public static String fileName = "profile.xml";
     
     // Envía el perfil del cliente al recibidor
     public static boolean sendProfile(String address, MobiCarta mbc) {
-        String data = FileIO.loadFile(path);    // Carga el perfil almacenado
+        String data = FileIO.loadFile(path, fileName);    // Carga el perfil almacenado
         if (!data.equals("")) {
             try {
                 BluetoothClient bc = BluetoothClient.getBluetoothClient();
@@ -48,12 +50,12 @@ public class ProfileManager {
     // Guarda el perfil del cliente en un archivo
     public static boolean saveProfile(Client c) {
         final String xml = xmlProfileBuilder(c);
-        return FileIO.createFile(path, xml);
+        return FileIO.createFile(path, fileName, xml);
     }
     
     // Carga el perfil del cliente de un archivo previamente almacenado
     public static Client loadClient(MobiCarta mbc) {
-        return xmlProfileDecoder(path, mbc);
+        return xmlProfileDecoder(mbc);
     }
     
     // Codifica en XML el perfil del cliente
@@ -79,12 +81,12 @@ public class ProfileManager {
     }
     
     // Decodifica el XML con el perfil del cliente
-    private static Client xmlProfileDecoder(String file, MobiCarta mbc) {
+    private static Client xmlProfileDecoder(MobiCarta mbc) {
         Client client = new Client();
         KXmlParser parser = new KXmlParser();
         try {
             // El perfil se carga del archivo generado con anterioridad
-            FileConnection fileCon = (FileConnection)Connector.open(file, Connector.READ);
+            FileConnection fileCon = (FileConnection)Connector.open(path + fileName, Connector.READ);
             if (fileCon.exists()) {
                 InputStreamReader is = new InputStreamReader(fileCon.openInputStream());
                 parser.setInput(is);

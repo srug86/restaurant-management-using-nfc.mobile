@@ -1105,7 +1105,7 @@ public Gauge getGauge() {
     
     // Gestiona el proceso de registro de un cliente en el restaurante
     private void clientRegister(String receiver) {
-        if (!FileIO.loadFile(ProfileManager.path).equals("")) {
+        if (!FileIO.loadFile(ProfileManager.path, ProfileManager.fileName).equals("")) {
             if (ProfileManager.sendProfile(receiver, this))
                 connecting("Registrando cliente");
             else
