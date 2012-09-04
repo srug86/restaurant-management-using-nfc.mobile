@@ -11,7 +11,6 @@ import domain.ProductsListManager;
 import domain.ProfileManager;
 import domain.RecommendationManager;
 import java.io.IOException;
-import java.util.Vector;
 import javax.microedition.contactless.ContactlessException;
 import javax.microedition.contactless.DiscoveryManager;
 import javax.microedition.contactless.TargetListener;
@@ -1051,6 +1050,7 @@ public Gauge getGauge() {
         removeNFCListener();
     }
 
+    // Detecta la cercanía de una etiqueta
     public void targetDetected(TargetProperties[] tps) {
         NDEFTagConnection connection = null;
         try {
@@ -1064,24 +1064,26 @@ public Gauge getGauge() {
         }
     }
 
+    // Detecta la cercanía de una etiqueta contenida en el PushRegistry
     public void recordDetected(NDEFMessage ndefm) {
         nfcStart = true;
         removeNDEFListener();
         tagProcessing(ndefm);
     }
     
+    // Procesa la información de la etiqueta leída
     private void tagProcessing(NDEFMessage message) {
         String type = message.getRecord(0).getRecordType().getName().toString();
         String content = new String(message.getRecord(0).getPayload());
-        if (type.equals("app/checkpoint")) {
+        if (type.equals("app/checkpoint")) {    // Etiqueta de registro
             removeNFCListener();
             clientRegister(content);
         }
-        else if (type.equals("app/bill-request")) {
+        else if (type.equals("app/bill-request")) { // Etiqueta de solicitud de facturación
             removeNFCListener();
             billRequest(content);
         }
-        else if (type.equals("app/product")) {
+        else if (type.equals("app/product")) {  // Etiqueta de producto
             if (getDisplay().getCurrent() == getOrdersList())
                 addProduct(content);
             else if (getDisplay().getCurrent() == getSubtractElement())
@@ -1089,18 +1091,19 @@ public Gauge getGauge() {
             else
                 newOrder(content);
         }
-        else if (type.equals("app/send-order")) {
+        else if (type.equals("app/send-order")) {   // Etiqueta de solicitud de pedido
             if (getDisplay().getCurrent() == getOrdersList() && ProductsListManager.productsList.size() > 0) {
                 removeNFCListener();
                 sendOrder(content);
             }
         }
-        else if (type.equals("app/subtract-product")) {
+        else if (type.equals("app/subtract-product")) { // Etiqueta para decrementar el número de productos de un tipo
             if (getDisplay().getCurrent() == getOrdersList() && ProductsListManager.productsList.size() > 0)
                 getDisplay().setCurrent(getSubtractElement());
         }
     }
     
+    // Gestiona el proceso de registro de un cliente en el restaurante
     private void clientRegister(String receiver) {
         if (!FileIO.loadFile(ProfileManager.path).equals("")) {
             if (ProfileManager.sendProfile(receiver, this))
@@ -1114,6 +1117,7 @@ public Gauge getGauge() {
         }
     }
     
+    // Gestiona la solicitud de facturación
     private void billRequest(String bar) {
         if (ProductsListManager.billRequest(bar, this))
             connecting("Solicitando factura");
@@ -1121,13 +1125,15 @@ public Gauge getGauge() {
             showAlert("Solicitud no enviada", "Se produjo un error al enviar la solicitud de facturación", AlertType.ERROR);
     }
     
+    // Inicializa la lista de productos para un pedido
     private void newOrder(String product) {
-        RecommendationManager.loadRecommendation(this);
+        RecommendationManager.loadRecommendation(this); // Carga las recomendaciones
         getDisplay().setCurrent(getOrdersList());
         String n = ProductsListManager.addProduct(product);
-        getOrdersList().append(new StringItem(product, n));
+        getOrdersList().append(new StringItem(product, n)); // Añade el producto seleccionado
     }
     
+    // Añade un producto a la lista de productos de un pedido
     private void addProduct(String product) {
         String n = ProductsListManager.addProduct(product);
         if (n.substring(0, 2).equals("1 "))
@@ -1140,10 +1146,11 @@ public Gauge getGauge() {
                 }
     }
     
+    // Gestiona la decrementación del número de productos de un tipo
     private void subtractProduct(String product) {
         int n = ProductsListManager.removeProduct(product);
         if (n != -1) {
-            if (n == 0) {
+            if (n == 0) {   // El número de productos ha llegado a 0
                 for (int i = 0; i < getOrdersList().size(); i++)
                     if (((StringItem)getOrdersList().get(i)).getLabel().toString().equals(product)) {
                         getOrdersList().delete(i);
@@ -1162,6 +1169,7 @@ public Gauge getGauge() {
         }
     }
     
+    // Gestiona el envío del pedido
     private void sendOrder(String bar) {
         if (ProductsListManager.sendOrder(bar, 1, this))
             connecting("Enviando pedido");
@@ -1169,6 +1177,7 @@ public Gauge getGauge() {
             this.showAlert("Pedido no enviado", "Se produjo un error en el envío del pedido", AlertType.ERROR);
     }
     
+    // Inicializa el 'gauge' (o barra de progreso de la aplicación)
     private void connecting(String msg) {
         searching = new Form(msg);
         gauge = new Gauge("Conectando...", false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
@@ -1179,6 +1188,7 @@ public Gauge getGauge() {
         Display.getDisplay(this).setCurrent(searching);
     }
     
+    // Muestra los mensajes emergentes de la aplicación
     public void showAlert(String title, String message, AlertType type) {
         alert = new Alert(title, message, null, type);
         exit = new Command("Salir", Command.EXIT, 1);

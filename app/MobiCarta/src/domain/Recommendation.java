@@ -11,9 +11,11 @@ import java.util.Vector;
  * @author Sergio
  */
 public class Recommendation {
+    /* Atributos del objeto */
     private String opening;
     private Vector usually, promotional, recommended;
     
+    // Método constructor
     public Recommendation() {
         this.opening = "";
         this.usually = new Vector();
@@ -21,6 +23,7 @@ public class Recommendation {
         this.recommended = new Vector();
     }
     
+    /* 'get's y 'set's de los atributos del objeto */
     public String getOpening() {
         return this.opening;
     }

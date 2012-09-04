@@ -9,16 +9,19 @@ package domain;
  * @author Sergio
  */
 public class RecProduct {
+    /* Atributos del objeto */
     private String name, category;
     private int times, discountedUnit;
     private double discount;
     
+    // Método constructor
     public RecProduct() {
         this.name = this.category = "";
         this.times = this.discountedUnit = 0;
         this.discount = 0.0;
     }
     
+    /* 'get's y 'set's de los atributos del objeto */
     public String getName() {
         return this.name;
     }
@@ -59,6 +62,7 @@ public class RecProduct {
         this.discount = d;
     }
     
+    // Dos productos recomendados son iguales si tienen el mismo nombre
     public boolean equals(Object o) {
         if (!(o instanceof RecProduct)) return false;
         if (o == null) return false;

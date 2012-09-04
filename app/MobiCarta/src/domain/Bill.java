@@ -11,11 +11,13 @@ import java.util.Vector;
  * @author Sergio
  */
 public class Bill {
+    /* Atributos del objeto */
     private String restaurant, date;
     private Vector orders;
     private int table;
     private double subtotal, discount, taxBase, iva, quote, total;
     
+    // Método constructor
     public Bill() {
         this.restaurant = this.date = "";
         this.orders = new Vector();
@@ -24,6 +26,7 @@ public class Bill {
                 this.quote = this.total = 0.0;
     }
     
+    /* 'get's y 'set's de los atributos del objeto */
     public String getRestaurant() {
         return this.restaurant;
     }

@@ -17,6 +17,7 @@ import javax.microedition.io.file.FileConnection;
  */
 public class FileIO {
     
+    // Crea un archivo en la ruta 'file' con los datos 'data'
     public static boolean createFile(String file, String data) {
         try{
             FileConnection fileCon = (FileConnection)Connector.open(file, Connector.READ_WRITE);
@@ -33,6 +34,7 @@ public class FileIO {
         return false;
     }
     
+    // Carga los datos del archivo con ruta 'file'
     public static String loadFile(String file) {
         String data = "";
         try {

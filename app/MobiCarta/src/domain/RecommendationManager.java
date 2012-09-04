@@ -23,19 +23,23 @@ import presentation.MobiCarta;
 public class RecommendationManager {
     public static Recommendation recommendation = new Recommendation();
     
+    // Directorio donde se guardan las recomendaciones recibidas
     public static String path = "file:///e:/mobiCarta/recommendations.xml";
     
+    // Captura la recomendación recibida
     public static void catchRecommendation(String xml, MobiCarta mbc) {
         FileIO.createFile(path, xml);
         xmlRecommendationDecoder(path, mbc);
         mbc.getSItemOpening().setText(recommendation.getOpening());
     }
     
+    // Carga las recomendaciones almacenadas
     public static void loadRecommendation(MobiCarta mbc) {
         xmlRecommendationDecoder(path, mbc);
         composeRecommendation(mbc);
     }
     
+    // Muestra la promoción del producto seleccionado
     public static String getPromotion(String product) {
         String prom = "";
         for (int i = 0; i < recommendation.getPromotional().size(); i++) {
@@ -46,6 +50,7 @@ public class RecommendationManager {
         return prom;
     }
     
+    // Confecciona la vista de la pantalla que muestra las recomendaciones
     private static void composeRecommendation(MobiCarta mbc) {
         if (recommendation.getPromotional().isEmpty() && recommendation.getRecommended().isEmpty() &&
                 recommendation.getUsually().isEmpty())
@@ -95,6 +100,7 @@ public class RecommendationManager {
         }
     }
     
+    // Decodifica el XML de las recomendaciones para el cliente
     private static void xmlRecommendationDecoder(String file, MobiCarta mbc) {
         KXmlParser parser = new KXmlParser();
         Vector usually = new Vector();
@@ -105,6 +111,7 @@ public class RecommendationManager {
         recommendation.setRecommended(recommended);
         RecProduct product = new RecProduct();
         try {
+            // Las recomendaciones se cargan del archivo generado con anterioridad
             FileConnection fileCon = (FileConnection)Connector.open(file, Connector.READ);
             if (fileCon.exists()) {
                 InputStreamReader is = new InputStreamReader(fileCon.openInputStream());

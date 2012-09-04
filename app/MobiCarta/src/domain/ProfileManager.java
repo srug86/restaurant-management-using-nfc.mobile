@@ -26,14 +26,16 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class ProfileManager {
     
+    // Directorio donde se almacena el perfil del cliente
     public static String path = "file:///e:/mobiCarta/profile.xml";
     
+    // Envía el perfil del cliente al recibidor
     public static boolean sendProfile(String address, MobiCarta mbc) {
-        String data = FileIO.loadFile(path);
+        String data = FileIO.loadFile(path);    // Carga el perfil almacenado
         if (!data.equals("")) {
             try {
                 BluetoothClient bc = BluetoothClient.getBluetoothClient();
-                bc.sendData(address, data, 0, mbc);
+                bc.sendData(address, data, 0, mbc); // y se lo envía
                 return true;
             } catch (BluetoothStateException ex) {
                 mbc.showAlert("Error en la conexión Bluetooth", ex.getMessage(), AlertType.ERROR);
@@ -43,15 +45,18 @@ public class ProfileManager {
         return false;
     }
     
+    // Guarda el perfil del cliente en un archivo
     public static boolean saveProfile(Client c) {
         final String xml = xmlProfileBuilder(c);
         return FileIO.createFile(path, xml);
     }
     
+    // Carga el perfil del cliente de un archivo previamente almacenado
     public static Client loadClient(MobiCarta mbc) {
         return xmlProfileDecoder(path, mbc);
     }
     
+    // Codifica en XML el perfil del cliente
     private static String xmlProfileBuilder(Client client) {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         xml += "<Profile>\n";
@@ -73,10 +78,12 @@ public class ProfileManager {
         return xml;
     }
     
+    // Decodifica el XML con el perfil del cliente
     private static Client xmlProfileDecoder(String file, MobiCarta mbc) {
         Client client = new Client();
         KXmlParser parser = new KXmlParser();
         try {
+            // El perfil se carga del archivo generado con anterioridad
             FileConnection fileCon = (FileConnection)Connector.open(file, Connector.READ);
             if (fileCon.exists()) {
                 InputStreamReader is = new InputStreamReader(fileCon.openInputStream());

@@ -9,10 +9,12 @@ package domain;
  * @author Sergio
  */
 public class Client {
+    /* Atributos del objeto */
     private String dni, name, surname;
     
     private Address address;
     
+    /* Métodos constructores */
     public Client() { 
         this.dni = this.name = this.surname = "";
         this.address = new Address();
@@ -25,6 +27,7 @@ public class Client {
         this.address = address;
     }
     
+    /* 'get's y 'set's de los atributos del objeto */
     public String getDNI() {
         return this.dni;
     }

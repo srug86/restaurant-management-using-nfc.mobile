@@ -9,10 +9,12 @@ package domain;
  * @author Sergio
  */
 public class BillItem {
+    /* Atributos del objeto */
     private String product;
     private int id, amount;
     private double price, discount, total;
     
+    // Método constructor
     public BillItem() {
         this.product = "";
         this.id = 0;
@@ -20,6 +22,7 @@ public class BillItem {
         this.price = this.discount = this.total = 0.0;
     }
     
+    /* 'get's y 'set's de los atributos del objeto */
     public String getProduct() {
         return this.product;
     }

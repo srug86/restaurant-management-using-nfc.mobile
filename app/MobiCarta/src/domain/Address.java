@@ -9,9 +9,11 @@ package domain;
  * @author Sergio
  */
 public class Address {
+    /* Atributos del objeto */
     private String street, number, town, state;
     private int zipCode;
     
+    /* Métodos constructores */
     public Address() {
         this.street = this.number = this.town = this.state = "";
     }
@@ -24,6 +26,7 @@ public class Address {
         this.state = state;
     }
     
+    /* 'get's y 'set's  de los atributos del objeto */
     public String getStreet() {
         return this.street;
     }

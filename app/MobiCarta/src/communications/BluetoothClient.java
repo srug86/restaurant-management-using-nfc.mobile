@@ -10,8 +10,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Vector;
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.DeviceClass;
@@ -24,7 +22,6 @@ import javax.bluetooth.UUID;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.lcdui.AlertType;
-import javax.microedition.lcdui.Ticker;
 import presentation.MobiCarta;
 
 /**
@@ -33,14 +30,15 @@ import presentation.MobiCarta;
  */
 public class BluetoothClient implements DiscoveryListener {
 
+    // identificador del servicio del recibidor
     public static final UUID RECEIVER_SERVICE = new UUID("888794c265ce4de1aa1574a11342bc63", false);
+    // identificador del servicio de la barra
     public static final UUID BAR_SERVICE = new UUID("888794c265ce4de1aa1574a11342bc64", false);
     public static UUID[] SERVICES;
     
     public static final int[] ATRIBUTES = null;
     
     private Vector searches;
-    //private int service;
     private DiscoveryAgent discoveryAgent;
     private LocalDevice localDevice;
     
@@ -51,6 +49,7 @@ public class BluetoothClient implements DiscoveryListener {
     
     private static BluetoothClient bc = null;
     
+    /* Implementación del patrón 'Singleton' para la clase */
     public BluetoothClient() { }
     
     public static BluetoothClient getBluetoothClient() {
@@ -59,6 +58,17 @@ public class BluetoothClient implements DiscoveryListener {
         return bc;
     }
     
+    // Inicializa los valores de la clase
+    public void sendData(String srvAddress, String data, int rcv, MobiCarta mbc) throws BluetoothStateException {
+        this.mbc = mbc;
+        this.rcv = rcv;
+        this.data = data;
+        if (rcv == 0) SERVICES = new UUID[] { RECEIVER_SERVICE };
+        else SERVICES = new UUID[] { BAR_SERVICE };
+        clientStart();
+    }
+    
+    // Inicializa la búsqueda de servicios Bluetooth
     private void clientStart() throws BluetoothStateException {
         searches = new Vector();
         localDevice = null;
@@ -68,17 +78,7 @@ public class BluetoothClient implements DiscoveryListener {
         discoveryAgent.startInquiry(DiscoveryAgent.GIAC, this);
     }
     
-    public void sendData(String srvAddress, String data, int rcv, MobiCarta mbc) throws BluetoothStateException {
-        this.mbc = mbc;
-        this.rcv = rcv;
-        this.data = data;
-        if (rcv == 0)
-            SERVICES = new UUID[] { RECEIVER_SERVICE };
-        else 
-            SERVICES = new UUID[] { BAR_SERVICE };
-        clientStart();
-    }
-    
+    // Finaliza la búsqueda de servicios Bluetooth
     private void finishSearches() {
         discoveryAgent.cancelInquiry(this);
         Enumeration en = searches.elements();
@@ -89,6 +89,7 @@ public class BluetoothClient implements DiscoveryListener {
         }
     }
     
+    // Almacena la lista de dispositivos encontrados
     public void deviceDiscovered(RemoteDevice rd, DeviceClass dc) {
         String address = rd.getBluetoothAddress();
         String friendlyName = null;
@@ -102,6 +103,8 @@ public class BluetoothClient implements DiscoveryListener {
             device = friendlyName + " ("+address+")";
         }
         try {
+            // Inicia la búsqueda de servicios en el dispositivo encontrado, en
+            // búsqueda de los servicios especificados
             int transId = discoveryAgent.searchServices(ATRIBUTES, SERVICES, rd, this);
             searches.addElement(new Integer(transId));
         } catch(BluetoothStateException e) {
@@ -109,6 +112,7 @@ public class BluetoothClient implements DiscoveryListener {
         }
     }
 
+    // Gestiona las comunicaciones con el servicio Bluetooth encontrado
     public void servicesDiscovered(int transId, ServiceRecord[] srs) {
         ServiceRecord service = null;
         for (int i = 0; i < srs.length; i++) {
@@ -119,26 +123,27 @@ public class BluetoothClient implements DiscoveryListener {
             DataOutputStream out = null;
             byte[] reply = new byte[20480];
             try {
-                connection = (StreamConnection)Connector.open(url);
+                connection = (StreamConnection)Connector.open(url); // Establece conexión con el servidor
                 out = connection.openDataOutputStream();
                 in = connection.openDataInputStream();
                 mbc.getGauge().setLabel("Enviando datos...");
-                out.writeUTF(data);
+                out.writeUTF(data); // Envía los datos al servidor
                 out.flush();
                 int rd = 0;
                 mbc.getGauge().setLabel("Recibiendo respuesta...");
-                while ((rd = in.read(reply)) <= 0);
+                while ((rd = in.read(reply)) <= 0); // Recibe la respuesta de este
             } catch (IOException e) {
                 mbc.showAlert("Error de entrada/salida", e.toString(), AlertType.ERROR);
             } finally {
                 try {
                     mbc.getGauge().setLabel("Cerrando conexión...");
+                    // Cierra los Streams y la conexión activa
                     if (in != null) in.close();
                     if (out != null) out.close();
                     if (connection != null) { connection.close(); connection = null; }
                     String msg = new String(reply, "ASCII");
                     switch (rcv) {
-                        case 0:
+                        case 0: // El cliente recibe las recomendaciones personalizadas
                             if (msg.substring(0, 1).equals("<")) {
                                 RecommendationManager.catchRecommendation(msg, mbc);
                                 mbc.getDisplay().setCurrent(mbc.getCheckpoint(), mbc.getOpening());
@@ -146,12 +151,12 @@ public class BluetoothClient implements DiscoveryListener {
                             else
                                 mbc.showAlert("Registro de usuarios", msg, AlertType.INFO);
                             break;
-                        case 1:
+                        case 1: // El cliente recibe la confirmación de "pedido en camino"
                             if (msg.substring(0, 5).equals("ERROR"))
                                 mbc.showAlert("Solicitud de pedidos", msg, AlertType.ERROR);
                             else mbc.showAlert("Solicitud de pedidos", msg, AlertType.CONFIRMATION);
                             break;
-                        case 2:
+                        case 2: // El cliente recibe la factura solicitada
                             BillManager.catchBill(msg, mbc);
                             mbc.getDisplay().setCurrent(mbc.getBill());
                             break;

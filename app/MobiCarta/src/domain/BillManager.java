@@ -24,11 +24,13 @@ import presentation.MobiCarta;
  */
 public class BillManager {
     
+    // Captura la factura recibida
     public static void catchBill(String xml, MobiCarta mbc) {
         Bill bill = xmlBillDecoder(mbc, xml);
         composeBill(bill, mbc);
     }
     
+    // Confecciona la vista de la pantalla que muestra la factura
     private static void composeBill(Bill bill, MobiCarta mbc) {
         mbc.getDisplay().getCurrent().setTicker(new Ticker("iniciando composición de factura..."));
         StringItem si = new StringItem("Restaurante", bill.getRestaurant());
@@ -55,6 +57,7 @@ public class BillManager {
         mbc.getBill().append(si);
     }
     
+    // Decodifica el XML con los datos de la factura
     private static Bill xmlBillDecoder(MobiCarta mbc, String xml) {
         Vector orders = new Vector();
         Bill bill = new Bill();

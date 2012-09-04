@@ -15,12 +15,14 @@ import presentation.MobiCarta;
  * @author Sergio
  */
 public class ProductsListManager {
+    // Vector de productos del pedido
     public static Vector productsList = new Vector();
     
+    // Añade un producto a la lista de productos del pedido
     public static String addProduct(String product) {
         String prom = "";
         if (!(prom = RecommendationManager.getPromotion(product)).equals(""))
-            prom = "\t\t(" + prom + ")";
+            prom = "\t\t(" + prom + ")";    // Informa de la promoción del producto (si la tuviera)
         for (int i = 0; i < productsList.size(); i++)
             if (productsList.elementAt(i).equals(new Order(product, 0))) {
                 ((Order)productsList.elementAt(i)).setAmount(((Order)productsList.
@@ -31,19 +33,21 @@ public class ProductsListManager {
         return 1 + " " + prom;
     }
     
+    // Elimina una unidad del producto 'product' de la lista de productos
     public static int removeProduct(String product) {
         for (int i = 0; i < productsList.size(); i++)
             if (productsList.elementAt(i).equals(new Order(product, 0))) {
                 int amount = ((Order)productsList.elementAt(i)).getAmount();
-                if (amount == 1)
-                    productsList.removeElementAt(i);
-                else
+                if (amount == 1)    // Si sólo había un producto de ese tipo
+                    productsList.removeElementAt(i);    // elimina el producto de la lista
+                else    // si no
                     ((Order)productsList.elementAt(i)).setAmount(amount - 1);
-                return amount - 1;
+                return amount - 1;  // decrementa el número total de productos de ese tipo
             }
         return -1;
     }
     
+    // Envía el pedido elaborado o la solicitud de facturación
     public static boolean sendOrder(String address, int type, MobiCarta mbc) {
         String data = xmlOrdersBuilder(mbc);
         if (!data.equals("")) {
@@ -60,12 +64,14 @@ public class ProductsListManager {
         return false;
     }
     
+    // Crea una solicitud de facturación
     public static boolean billRequest(String address, MobiCarta mbc) {
         productsList = new Vector();
         productsList.addElement(new Order("Solicitud de facturacion", 0));
         return sendOrder(address, 2, mbc);
     }
     
+    // Codifica un XML con los datos del pedido
     private static String xmlOrdersBuilder(MobiCarta mbc) {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         xml += "<ClientOrder>\n";
